@@ -3,33 +3,48 @@ from dm_control import viewer
 from dm_control.suite.wrappers import pixels
 from dm_env import specs
 from PIL import Image
+import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
+import itertools
+import inspect
 
 if __name__ == '__main__':
     # Load one task:
     env = suite.load(domain_name="cloth_v0", task_name="easy")
-    print('Env',env,'\n')
+    _DOMAINS = {name: module for name, module in locals().items()
+            if inspect.ismodule(module) and hasattr(module, 'SUITE')}
+
     
-    observation_spec = env.observation_spec()
+    print(_DOMAINS)
+
+    # action 
     action_spec = env.action_spec()
+
+    time_step = env.reset()
+
+    time_step_counter = 0
     
-    print('Observation',observation_spec,'\n')
-    print('Action' ,action_spec,'\n')
-    
-    pixels = env.physics.render(width = 64, height = 64, camera_id = 0)
-    
-    plt.imshow(pixels, interpolation="none")
-    plt.show()
-    
-    #env.reset()
-    #print(time_step)
-    #done = False
-    
-    #while not done:
-    #  action = np.random.uniform(action_spec.minimum,
-    #                             action_spec.maximum,
-    #                             size=action_spec.shape)
-    #  env.step(action)
-    #  viewer.launch(env)
-    #  print(env.step.reward, env.step.discount, env.step.observation)
+    # reset frames folder
+    subprocess.call([ 'rm', '-rf', '-frames' ])
+    subprocess.call([ 'mkdir', '-p', 'frames' ])
+
+
+    while not time_step.last() and time_step_counter < 50000:
+        action = np.random.uniform(action_spec.minimum, 
+                                action_spec.maximum, 
+                                size = action_spec.shape)
+        time_step = env.step(action)
+
+        image_data = env.physics.render(width = 64, height = 64, camera_id = 0)
+        img = Image.fromarray(image_data, 'RGB')
+        img.save("frames/frame-%.10d.png" % time_step_counter)
+        time_step_counter += 1
+        print(time_step)
+        #plt.imshow(img, interpolation="none")
+        #plt.show()
+        viewer.launch(env)
+    subprocess.call([
+                    'ffmpeg', '-framerate', '50', '-y', '-i',
+                    'frames/frame-%010d.png', '-r', '30', '-pix_fmt', 'yuv420p', 'video_name.mp4'
+    ])

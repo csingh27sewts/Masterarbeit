@@ -1,0 +1,15 @@
+[submodule "Packages/rlpyt"]
+	path = Packages/rlpyt
+	url = https://github.com/wilson1yan/rlpyt.git
+[submodule "Packages/Learning-To-Manipulate-Deformable-Objects-without-Manipulation"]
+	path = Packages/Learning-To-Manipulate-Deformable-Objects-without-Manipulation
+	url = https://github.com/csingh27/Learning-To-Manipulate-Deformable-Objects-without-Manipulation.git
+[submodule "Packages/Actor-Critic-Methods-Paper-To-Code"]
+	path = Packages/Actor-Critic-Methods-Paper-To-Code
+	url = https://github.com/philtabor/Actor-Critic-Methods-Paper-To-Code.git
+[submodule "Packages/dm_control"]
+	path = Packages/dm_control
+	url = https://github.com/wilson1yan/dm_control.git
+[submodule "Packages/dm_env"]
+	path = Packages/dm_env
+	url = https://github.com/wilson1yan/dm_env.git

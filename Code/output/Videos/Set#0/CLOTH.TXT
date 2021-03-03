@@ -1,0 +1,4 @@
+N_GAMES = 1000
+Reward : 
+Initial random trials
+

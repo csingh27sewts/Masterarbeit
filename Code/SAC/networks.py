@@ -5,10 +5,11 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.distributions.normal import Normal
 import numpy as np
+import os
 
 class CriticNetwork(nn.Module):
     def __init__(self, beta, input_dims, fc1_dims, fc2_dims, n_actions,
-            name, chkpt_dir=os.path.join(os.getcwd(),'tmp/sac')):
+            name, chkpt_dir=os.path.join(os.getcwd(),'SAC/tmp/sac')):
         super(CriticNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
@@ -47,7 +48,7 @@ class CriticNetwork(nn.Module):
 
 class ActorNetwork(nn.Module):
     def __init__(self, alpha, input_dims, fc1_dims, fc2_dims, max_action,
-            n_actions, name, chkpt_dir=os.path.join(os.getcwd(),'tmp/sac')):
+            n_actions, name, chkpt_dir=os.path.join(os.getcwd(),'SAC/tmp/sac')):
         super(ActorNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
@@ -86,11 +87,17 @@ class ActorNetwork(nn.Module):
     def sample_normal(self, state, reparameterize=True):
         mu, sigma = self.forward(state)
         probabilities = T.distributions.Normal(mu, sigma)
+        # Creates a normal distribution from mean and variance
+        # https://pytorch.org/docs/stable/distributions.html
 
         if reparameterize:
             actions = probabilities.rsample() # reparameterizes the policy
         else:
             actions = probabilities.sample()
+        # https://www.youtube.com/watch?v=MswxJw-8PvE
+        # https://www.youtube.com/watch?v=QrOsBIn1Gto
+        
+        # rsample stores gradients, sample does not
 
         action = T.tanh(actions)*T.tensor(self.max_action).to(self.device) 
         log_probs = probabilities.log_prob(actions)
@@ -130,12 +137,13 @@ class ActorNetwork(nn.Module):
 
 class ValueNetwork(nn.Module):
     def __init__(self, beta, input_dims, fc1_dims, fc2_dims,
-            name, chkpt_dir='tmp/sac'):
+            name, chkpt_dir='SAC/tmp/sac'):
         super(ValueNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
         self.fc2_dims = fc2_dims
         self.name = name
+        chkpt_dir = os.path.join(os.getcwd(),chkpt_dir)
         self.checkpoint_dir = chkpt_dir
         self.checkpoint_file = os.path.join(self.checkpoint_dir, name+'_sac')
 

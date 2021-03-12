@@ -1,0 +1,4 @@
+N_GAMES = 1000
+Reward : 
+area = np.sum(current_mask * self.mask) # Max intersection with goal state
+reward = area / np.sum(self.mask)

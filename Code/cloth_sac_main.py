@@ -1,124 +1,172 @@
-# the following 3 lines are helpful if you have multiple GPUs and want to train
-# agents on multiple GPUs. I do this frequently when testing.
+# The following 3 lines are helpful if you have multiple GPUs and want to train
+# agents on multiple GPUs
 #import os
 #os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
 #os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
-import dm_control
-from dm_control import suite
-from dm_control import viewer
-from dm_control.suite.wrappers import pixels
-from dm_env import specs
+# Import packages
+import Packages.dm_control
+from Packages.dm_control.dm_control import suite
+from Packages.dm_control.dm_control import viewer
+from Packages.dm_control.dm_control.suite.wrappers import pixels
+from Packages.dm_env.dm_env import specs
 from PIL import Image
 import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
 import inspect
-
 from SAC.sac_torch import Agent
 from SAC.utils import plot_learning_curve
 import os
 import torch as T
 
 if __name__ == '__main__':
+   
+    # Check Torch version
+    print(T.__version__)
+
+    # Get location of DM Control Suite
+    # print(inspect.getfile(dm_control)) # built in path
+
+    # Choose environment
+    # env_id = 'cloth_v0'
+    env_id = 'cloth_sewts_exp1'
+    # env_id = 'cloth_v0'
     
+
+    # Define main variables 
+    n_games = 100        
+    score_max = []
+    time_step_counter_max = []
+
     # Load environment
-    env_id = 'cloth_v0'
     env = suite.load(domain_name=env_id, task_name="easy")
-    print("TEST")
+    
+    # Define action space and action shape
     action_space = env.action_spec()
     action_shape = action_space.shape[0]
+
+    # Define observation space and observation shape
     observation_space = env.observation_spec()
     observation_shape = observation_space['position'].shape
-    # SAC Agent 
+
+    # Initialize SAC Agent 
     agent = Agent(alpha=0.0003, beta=0.0003, reward_scale=2, env_id=env_id, 
                 input_dims= observation_shape, tau=0.005,
                 env=env, batch_size=256, layer1_size=256, layer2_size=256,
                 n_actions=action_shape)
-    n_games = 50000
 
-    # Define filename to store plots
-    filename = env_id + '_'+ str(n_games) + 'games_scale' + str(agent.scale) + \
-                    '_clamp_on_sigma.png'
-    figure_file = 'SAC/plots/' + filename
-    figure_file = os.path.join(os.getcwd(), figure_file)
-
-    # reset frames folder
-    subprocess.call([ 'rm', '-rf', '-frames' ])
-    subprocess.call([ 'mkdir', '-p', 'frames' ])
-
-    best_score = -1*float('inf') # lower reward range
-    score_history = []
+    # create output folder for current experiment
+    path_to_output = os.getcwd() + '/output'
+    os.chdir(path_to_output)
+    if not os.path.exists(env_id):
+        subprocess.call(["mkdir","-p", env_id])
     
+    # create experiment
+    path_to_environment = path_to_output + '/' + env_id
+    os.chdir(path_to_environment)
+
+    # Load models from checkpoint
     load_checkpoint = False
-    # display 
     if load_checkpoint:
         agent.load_models()
-        viewer.launch(env)
+        #viewer.launch(env)
     
-    steps = 0        
-    
-    # reset frames folder
-    subprocess.call([ 'rm', '-rf', '-frames' ])
-    subprocess.call([ 'mkdir', '-p', 'frames' ])
-
-    done = False
-    score = 0
-
-    action_spec = env.action_spec()
-    time_step = env.reset()
-    time_step_counter = 0
-    observation = time_step.observation['position']
- 
-    while not time_step.last() and time_step_counter < n_games:
+    # Loop for a no. of games
+    for i in range(n_games):
         
-            print("TIME STEP")
-            print(time_step)
-            action = np.random.uniform(action_spec.minimum,
-                                action_spec.maximum,
-                                size = action_spec.shape)
+        # Reset environment
+        time_step = env.reset()
+        
+        # Define variables
+        observation = time_step.observation['position']
+        reward_history = []
+        step = 0
+        done = False
+
+        # Change directory to current environment path
+        os.chdir(path_to_environment)
+        
+        # Make folder for each game
+        game_no = 'game_' + str(i+1)
+        subprocess.call([ 'mkdir', '-p', game_no ])
+
+        # Display current game no.
+        print("GAME NO.", i,"\n")
+        while done is False : 
+
+            # Move to game folder
+            path_to_game = path_to_environment + '/' + game_no
+            os.chdir(path_to_game)
             
+            # Take action 
+            action = agent.choose_action(observation)
+            # print(action) # Print action, uncomment to display
+            # action[2] = 0. # Uncomment for cloth_sewts_v1 env
             time_step = env.step(action)
-           
+            print("TIME STEP\n")
+            print(time_step)
+
+            # Get next observation and reward
             observation_ = time_step.observation['position']
-            print(observation_)
             reward = time_step.reward
 
-            image_data = env.physics.render(width = 64, height = 64, camera_id = 0)
+            # Render image from environment for the time step and save
+            # viewer.launch(env)
+            image_data = env.physics.render(width = 640, height = 480, camera_id = 1)
             img = Image.fromarray(image_data, 'RGB')
-            img.save("frames/frame-%.10d.png" % time_step_counter)
-            time_step_counter += 1
+            img.save("frame-%.10d.png" % step)
+            
+            # Increment step
+            step += 1
 
+            # Define terminal state (Max no. of steps 100 or when we reach close to the maximum reward of 0)
+            if step == 1000:
+            # if step == 10000 or reward > -0.005: # No. of steps should be > batch size of 250 as the agent learns only when the batch is full
+                done = True
+
+            # Add current observation, action, reward and next observation to the Replay Buffer
             agent.remember(observation, action, reward, observation_, done)
+            
+            # Learn parameters of SAC Agent
             if not load_checkpoint:
                 agent.learn()
-            # Each call to an environment’s step() method returns a TimeStep namedtuple with
-            # step_type, reward, discount and observation fields
-            score += time_step.reward #reward
-            observation = observation_ # update observation
-            score_history.append(score)
-            avg_score = np.mean(score_history[-100:])
+            
+            # Update observation with next observation
+            observation = observation_
 
-            if avg_score > best_score:
-                best_score = avg_score
+            # Add to the list of rewards for each time step 
+            reward_history.append(reward)
+            
+            # Save agent models
             if not load_checkpoint:
                 agent.save_models()
-            print('episode ', time_step_counter, 'score %.1f' % score,
-                'trailing 100 games avg %.1f' % avg_score, 
-                'steps %d' % steps, env_id, 
-                ' scale ', agent.scale)
 
+        # Get maximum reward for the current game
+        score_max.append(np.amax(reward_history))
+        print("MAX REWARD FOR GAME NO.", i, "/n")
+        print(score_max)
+
+        # Define filename to store plots
+        filename = env_id + '_'+ str(n_games) + 'plot.png'
+        figure_file = filename
+        figure_file = os.path.join(os.getcwd(), figure_file)
+
+        # Plot learning curve
+        x = [i for i in range(step)]
+        plot_learning_curve(x, reward_history, figure_file)
+
+        filename = str(n_games)
+        subprocess.call([
+                        'ffmpeg', '-framerate', '50', '-y', '-i',
+                        'frame-%010d.png', '-r', '30', '-pix_fmt', 'yuv420p','video.mp4'                
+                        ])
+
+    final_figure = path_to_game + 'final_plot.jpg'
     if not load_checkpoint:
-        x = [i+1 for i in range(n_games)]
-        print("SCORE")
-        print(score_history)
-        print(x)
-        plot_learning_curve(x, score_history, figure_file)
-
-    filename = str(n_games)
-    subprocess.call([
-                    'ffmpeg', '-framerate', '50', '-y', '-i',
-                    'frames/frame-%010d.png', '-r', '30', '-pix_fmt', 'yuv420p','video_sac.mp4' # TODO to update name of file
-            ])
+        print("GOGGINS")
+        x = [i for i in range(n_games)]
+        plot_learning_curve(x, score_max, final_figure)
+        print("GOGGINS")
 

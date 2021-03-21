@@ -211,6 +211,36 @@ Agent
 
 Exploring different environment files to understand action_space and reward 
 
+Detailed documentation is in dm_control package in .mujoco
+
+cloth_corner.py : 
+observation - 
+action - 
+For Random location (3,) - pick point (x, y, z)
+Otherwise (7,) - (0,1,0,0) encoding first 4 terms , + pick point next 3 terms
+reward - overlap with goal state maximize
+
+cloth_sim.py
+observation -
+action - 
+(3,) - pick point (x, y, z)
+reward - 
+sum of geo_pos of each of particles added with an array terms such that the whole sum would be 0 for the ideal case of flat cloth goal state
+Goal is to minimize the sum
+
+cloth_two_hand.py : 
+observation -
+action - (10,) - first two [x,y] pixel locations for pick point + next 5 dont know ? (Not sure about it)+ last three are movements in [x,y,z] from the pick point towards place point
+ or (6,) - first xyz is left, second xyz is right
+reward - overlap with goal state maximize
+
+cloth_v0.py : 
+action - (12,) - 
+reward - 
+diagonal -maximize sum of diagonal distances
+convex hull - ? 
+others - ?
+
 rope_v1.py, rope_v2.py, rope_sac.py : 
 action - (2,) - [x,y] of pixel location for a pick point , place point is defined by moving a random distance within a small circle centred at the pick position
 reward - rewarding the pixels of the bead to be in the middle. Check the paper
@@ -227,12 +257,9 @@ reward -
 cloth_v3.py : 
 action - (12,) -  [Fx, Fy, Fz] no. of force actions + 2 [x, y] pixel location + 3*2 DOF for the 3 arm units + ???
 
-cloth_v0.py : 
-action - (12,) - 
 
-cloth_two_hand.py : 
-action - (10,) - first two [x,y] pixel locations for pick point + next 5 dont know ? + last three are movements in [x,y,z] from the pick point towards place point
- or (6,) - first xyz is left, second xyz is right
+
+
 
 cloth_sim_state.py :
 action - (3,) - position of a particle
@@ -246,8 +273,7 @@ action - (5,) or (3,)
 cloth_gripper.py : 
 action - (5,)
 
-cloth_corner.py : 
-action - (3,) or (7,) - One hot + action
+
 
 Expand on the pipeline to make it faster for real world use
 
@@ -256,4 +282,83 @@ Area
 Area Convex
 Diagonal
 Area Concave
+
+
+Conditional pick and place policy : 
+Pick point selected randomly + Place point selected, Reward gotten, if reward is good pick point is given good score (MVP : Maximum Value under Placing)
+
+Should be working on multiple towel types
+#################################################
+Defining rewards and actions for our use case : 
+Main use case - 
+Goal state : One seam open
+Reward - 
+Add high value to reward for line, little lower for concave and convex curves with decreases with the size of the curvature
+Presence of a corner increases the reward
+
+Alternate use cases - 
+Goals : Fully flatten it
+Goals : Open one thick seam
+
+General action options to consider - 
+Pick point + pulling direction
+Pick point + move distance
+
+#################################################
+adding gravity in simulation for natural cloth flow
+/home/chandandeep/anaconda3/envs/rlpyt/lib/python3.7/site-packages/dm_control/mujoco/wrapper/mjbindings
+types.py has gravity defined under MjOptions
+
+/home/chandandeep/anaconda3/envs/rlpyt/lib/python3.7/site-packages/dm_control/viewer/application.py and set _pause_subject to False
+I think the viewer just shows views for one state. Does not mean that gravity is not there. It was paused and the actions do make sense
+So there is no need to change simulation. To see proper visualization perhaps just putting it to False is enough
+#################################################
+Flow of running RL
+All functions are defined in /home/chandandeep/anaconda3/envs/rlpyt/lib/python3.7/site-packages/dm_control/rl/control.py
+* env.reset()
+ 	- initialize_episode() in cloth_sewts.py
+		- Apply forces of -2 on B34 and B44 particles of cloth and fix them
+		- Initialize image and mask (Representative of goal state as it is flat)
+		- Initialize random cloth position by giving random force in range of [-0.5,0.5] in each of the x,y,z directions
+		-  
+	- get_observations() in cloth_sewts.py
+		- array([0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0.,
+       				1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1.,
+			       0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0.,
+			       0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0.,
+			       0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0.,
+			       1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1.,
+			       0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0.,
+			       0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0.,
+			       0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0.,
+			       1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1.,
+			       0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0.,
+			       0., 0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0.], dtype=float32)
+		- One hot corner [0,1,0,0] (Randomly selected) represented in 50 repetitions in a numpy array 
+		- Observation is represented by corner
+		- OR if pixels, then x,y positions of each of the particles
+	- Return timestep (obs, action, rewards, done)
+* Define random action (3,)
+* env.step(random action)
+	- before_step()
+		- random corner selected		
+		- random action normalized by multiplying with 0.05
+		- distance to move defined based on the action specified
+		- force applied proportional to distance moved
+		- 40 steps till the corner is moved such that the action is performed , i.e. distance moved
+	- after_step()
+	- get_observations() in cloth_sewts.py
+	- get_reward()
+	- Return timestep (obs, action, rewards, done)
+
+Sequence of tasks to finish : 
+* Fully understand and compile states, observations, rewards for all the cloth cases  
+* Propose states, actions, rewards for your use case  
+* Test using new states, actions, rewards  
+* Make gravity simulation  
+* Test on new towels  
+* Get Sewts towel textures and test on new models  
+* Transfer policy to Pybullet simulation Robot  
+* Make Mujoco cloth simulation more realistic (Change initial position generation me+thod)  
+* Transfer policy to real robot  
 

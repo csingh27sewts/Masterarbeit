@@ -53,7 +53,6 @@ class Agent():
 
         state, action, reward, new_state, done = \
                 self.memory.sample_buffer(self.batch_size)
-
         reward = T.tensor(reward, dtype=T.float).to(self.critic_1.device)
         done = T.tensor(done).to(self.critic_1.device)
         state_ = T.tensor(new_state, dtype=T.float).to(self.critic_1.device)

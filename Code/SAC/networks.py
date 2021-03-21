@@ -98,8 +98,11 @@ class ActorNetwork(nn.Module):
         # https://www.youtube.com/watch?v=QrOsBIn1Gto
         
         # rsample stores gradients, sample does not
-
-        action = T.tanh(actions)*T.tensor(self.max_action).to(self.device) 
+        print("ACTIONS !!!")
+        # print(actions)
+        # print(T.tensor(self.max_action))
+        action = T.tensor(actions) * T.from_numpy(self.max_action).float().to(self.device)
+        print(action)
         log_probs = probabilities.log_prob(actions)
         log_probs -= T.log(1-action.pow(2) + self.reparam_noise)
         log_probs = log_probs.sum(1, keepdim=True)

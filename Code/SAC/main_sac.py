@@ -31,7 +31,7 @@ if __name__ == '__main__':
                 input_dims=env.observation_space.shape, tau=0.005,
                 env=env, batch_size=256, layer1_size=256, layer2_size=256,
                 n_actions=env.action_space.shape[0])
-    n_games = 10
+    n_games = 250
 
     # Define filename to store plots
     filename = env_id + '_'+ str(n_games) + 'games_scale' + str(agent.scale) + \

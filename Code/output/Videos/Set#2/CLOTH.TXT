@@ -1,8 +1,0 @@
-N_GAMES = 5000
-Reward : 
-no. of white pixels
-    for i in range(current_mask.shape[0]):
-        for j in range(current_mask.shape[1]):
-            if current_mask[i][j] == 0:
-                count += 1
-

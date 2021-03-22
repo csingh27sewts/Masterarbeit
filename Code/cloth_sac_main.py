@@ -31,8 +31,8 @@ if __name__ == '__main__':
 
     # Choose environment
     # env_id = 'cloth_v0'
-    env_id = 'cloth_sewts_exp1'
-    # env_id = 'cloth_v0'
+    # env_id = 'cloth_sewts_exp1'
+    env_id = 'cloth_v0'
     
 
     # Define main variables 
@@ -83,6 +83,7 @@ if __name__ == '__main__':
         observation = time_step.observation['position']
         reward_history = []
         step = 0
+        reward = 0
         done = False
 
         # Change directory to current environment path
@@ -102,7 +103,8 @@ if __name__ == '__main__':
             
             # Take action 
             action = agent.choose_action(observation)
-            # print(action) # Print action, uncomment to display
+            print("ACTION \n")
+            print(action) # Print action, uncomment to display
             # action[2] = 0. # Uncomment for cloth_sewts_v1 env
             time_step = env.step(action)
             print("TIME STEP\n")
@@ -111,6 +113,8 @@ if __name__ == '__main__':
             # Get next observation and reward
             observation_ = time_step.observation['position']
             reward = time_step.reward
+            # print(observation_) # Print oberservation
+            # print(reward) # Print reward
 
             # Render image from environment for the time step and save
             # viewer.launch(env)
@@ -165,8 +169,6 @@ if __name__ == '__main__':
 
     final_figure = path_to_game + 'final_plot.jpg'
     if not load_checkpoint:
-        print("GOGGINS")
         x = [i for i in range(n_games)]
         plot_learning_curve(x, score_max, final_figure)
-        print("GOGGINS")
 

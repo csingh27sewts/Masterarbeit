@@ -20,6 +20,7 @@ from SAC.sac_torch import Agent
 from SAC.utils import plot_learning_curve
 import os
 import torch as T
+import csv
 
 if __name__ == '__main__':
    
@@ -36,7 +37,7 @@ if __name__ == '__main__':
     
 
     # Define main variables 
-    n_games = 100        
+    n_games = 10        
     score_max = []
     time_step_counter_max = []
 
@@ -73,12 +74,25 @@ if __name__ == '__main__':
         agent.load_models()
         #viewer.launch(env)
     
+    
+    # Define log dictionary  
+    log_dict = {
+                "Image" : [],
+                "Game_no" : [],
+                "Step_no" : [],
+                "State" : [],
+                "Action" : [],
+                "Reward" : []
+                }
+
+    log_file = path_to_environment + "/log.txt"
+
     # Loop for a no. of games
     for i in range(n_games):
         
         # Reset environment
         time_step = env.reset()
-        
+
         # Define variables
         observation = time_step.observation['position']
         reward_history = []
@@ -95,6 +109,7 @@ if __name__ == '__main__':
 
         # Display current game no.
         print("GAME NO.", i,"\n")
+
         while done is False : 
 
             # Move to game folder
@@ -103,8 +118,8 @@ if __name__ == '__main__':
             
             # Take action 
             action = agent.choose_action(observation)
-            print("ACTION \n")
-            print(action) # Print action, uncomment to display
+            # print("ACTION \n")
+            # print(action) # Print action, uncomment to display
             # action[2] = 0. # Uncomment for cloth_sewts_v1 env
             time_step = env.step(action)
             print("TIME STEP\n")
@@ -126,7 +141,7 @@ if __name__ == '__main__':
             step += 1
 
             # Define terminal state (Max no. of steps 100 or when we reach close to the maximum reward of 0)
-            if step == 1000:
+            if step == 10:
             # if step == 10000 or reward > -0.005: # No. of steps should be > batch size of 250 as the agent learns only when the batch is full
                 done = True
 
@@ -143,6 +158,14 @@ if __name__ == '__main__':
             # Add to the list of rewards for each time step 
             reward_history.append(reward)
             
+            # Add a logger to capture states, rewards, actions coupled with the images captured to understand how the agent operates
+            log_dict["Image"].append(img)
+            log_dict["Game_no"].append(game_no)
+            log_dict["Step_no"].append(step)
+            log_dict["State"].append(observation)
+            log_dict["Action"].append(action)
+            log_dict["Reward"].append(reward)
+
             # Save agent models
             if not load_checkpoint:
                 agent.save_models()
@@ -166,6 +189,11 @@ if __name__ == '__main__':
                         'ffmpeg', '-framerate', '50', '-y', '-i',
                         'frame-%010d.png', '-r', '30', '-pix_fmt', 'yuv420p','video.mp4'                
                         ])
+    
+    text_file = csv.writer(open(log_file, "w"))
+    for key, val in log_dict.items():
+        text_file.writerow([key, val])
+    text_file.close()
 
     final_figure = path_to_game + 'final_plot.jpg'
     if not load_checkpoint:

@@ -79,17 +79,25 @@ class ActorNetwork(nn.Module):
         mu = self.mu(prob)
         #sigma = T.sigmoid(self.sigma(prob))
         sigma = self.sigma(prob)
+
+        # Clamping sigma values between the range min and max, if values are lower than reparam noise, initialize them to reparam noise
         sigma = T.clamp(sigma, min=self.reparam_noise, max=1) 
         # authors use -20, 2 -> doesn't seem to work for my implementation
 
         return mu, sigma
 
     def sample_normal(self, state, reparameterize=True):
+
+        # Feed the state to the model adn get mu and sigma
+        # mu and sigma each have size equal to no. of actions, in cloth_v0 it is 12
         mu, sigma = self.forward(state)
         probabilities = T.distributions.Normal(mu, sigma)
+        # print("PROBABILITIES\n")
+        # print(probabilities)
+        # print(mu, sigma)
         # Creates a normal distribution from mean and variance
         # https://pytorch.org/docs/stable/distributions.html
-
+        
         if reparameterize:
             actions = probabilities.rsample() # reparameterizes the policy
         else:
@@ -98,12 +106,28 @@ class ActorNetwork(nn.Module):
         # https://www.youtube.com/watch?v=QrOsBIn1Gto
         
         # rsample stores gradients, sample does not
-        print("ACTIONS !!!")
-        # print(actions)
         # print(T.tensor(self.max_action))
+        
+        # Why is this multiplied with max action which is [1,1,1,1,1,1,1,1,1,1,1,1]
+        # multiplying the sampled action with all of the actions
+        # tensor([1.3426, 1.3426, 1.3426, 1.3426, 1.3426, 1.3426, 1.3426, 1.3426, 1.3426,
+        # 1.3426, 1.3426, 1.3426])
+        # This is because it was defined for the original enironment InvertedPendulum
+        # Which has action as just one value. Max_action = 1 in this case
+        # But it is also ok in our case
+        # I think this is defined for the case when the max_action is not equal to 1 
+        # since for max_action = 1 it is not needed
         action = T.tensor(actions) * T.from_numpy(self.max_action).float().to(self.device)
+        print("ACTIONS")
         print(action)
+
+        # Take log_probs of action, i.e. log(p(a|pi_theta(s))
         log_probs = probabilities.log_prob(actions)
+        print("LOG PROBS")
+        print(log_probs)
+
+        # log_prob = log_prob(actions) - log(1 - action^2 + reparam_noise)
+        # Where does this formula come from and what is its significance ?
         log_probs -= T.log(1-action.pow(2) + self.reparam_noise)
         log_probs = log_probs.sum(1, keepdim=True)
 

@@ -10,7 +10,7 @@ from Packages.dm_control.dm_control import suite
 from Packages.dm_control.dm_control import viewer
 from Packages.dm_control.dm_control.suite.wrappers import pixels
 from Packages.dm_env.dm_env import specs
-from PIL import Image
+from PIL import Image, ImageTk
 import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,7 +20,9 @@ from SAC.sac_torch import Agent
 from SAC.utils import plot_learning_curve
 import os
 import torch as T
-import csv
+import pandas as pd
+import sys
+np.set_printoptions(threshold=sys.maxsize)
 
 if __name__ == '__main__':
    
@@ -28,12 +30,12 @@ if __name__ == '__main__':
     print(T.__version__)
 
     # Get location of DM Control Suite
-    # print(inspect.getfile(dm_control)) # built in path
-
+    # print(inspect.getfile(dm_control.suite)) # built in path
+    # /home/chandandeep/anaconda3/envs/rlpyt/lib/python3.7/site-packages/dm_control/suite/
     # Choose environment
     # env_id = 'cloth_v0'
     # env_id = 'cloth_sewts_exp1'
-    env_id = 'cloth_v0'
+    env_id = 'cloth_sewts_exp2'
     
 
     # Define main variables 
@@ -51,7 +53,7 @@ if __name__ == '__main__':
     # Define observation space and observation shape
     observation_space = env.observation_spec()
     observation_shape = observation_space['position'].shape
-
+    print(observation_shape)
     # Initialize SAC Agent 
     agent = Agent(alpha=0.0003, beta=0.0003, reward_scale=2, env_id=env_id, 
                 input_dims= observation_shape, tau=0.005,
@@ -85,7 +87,7 @@ if __name__ == '__main__':
                 "Reward" : []
                 }
 
-    log_file = path_to_environment + "/log.txt"
+    log_file = path_to_environment + "/log.csv"
 
     # Loop for a no. of games
     for i in range(n_games):
@@ -134,8 +136,12 @@ if __name__ == '__main__':
             # Render image from environment for the time step and save
             # viewer.launch(env)
             image_data = env.physics.render(width = 640, height = 480, camera_id = 1)
+            #img = Image.open(image_data)
+            # image_array = np.asarray(image_data)
             img = Image.fromarray(image_data, 'RGB')
-            img.save("frame-%.10d.png" % step)
+            img_loc = path_to_game + "/frame-%.10d.png" % step
+            img_name = "frame-%.10d.png" % step
+            img.save(img_name)
             
             # Increment step
             step += 1
@@ -159,7 +165,7 @@ if __name__ == '__main__':
             reward_history.append(reward)
             
             # Add a logger to capture states, rewards, actions coupled with the images captured to understand how the agent operates
-            log_dict["Image"].append(img)
+            log_dict["Image"].append(img_loc)
             log_dict["Game_no"].append(game_no)
             log_dict["Step_no"].append(step)
             log_dict["State"].append(observation)
@@ -190,13 +196,18 @@ if __name__ == '__main__':
                         'frame-%010d.png', '-r', '30', '-pix_fmt', 'yuv420p','video.mp4'                
                         ])
     
-    text_file = csv.writer(open(log_file, "w"))
-    for key, val in log_dict.items():
-        text_file.writerow([key, val])
-    text_file.close()
+    # In case you want to save the log_dict in a separate log.txt file
+    df = pd.DataFrame(log_dict).to_csv(log_file, header = True, index = False)
+    # df.to_csv(log_file)
+    # df = pd.read_csv(log_file, index_col=0)
+    # print(df)
+    # file_csv = open(log_file, "w")
+    # text_file = csv.writer(file_csv)
+    # log_dict = zip(log_dict.items())
+    # for key in log_dict.items():
+    #     text_file.writerow([key])
+    #for value in log_dict.items():
+    #    text_file.writerow([value])
+    # file_csv.close()
 
-    final_figure = path_to_game + 'final_plot.jpg'
-    if not load_checkpoint:
-        x = [i for i in range(n_games)]
-        plot_learning_curve(x, score_max, final_figure)
 

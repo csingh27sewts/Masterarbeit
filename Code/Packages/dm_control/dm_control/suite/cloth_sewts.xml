@@ -35,12 +35,12 @@
         <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="512"/>
         <texture name="texplane" type="2d" builtin="checker" rgb1=".2 .3 .4" rgb2=".1 0.15 0.2"
             width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
-    <texture name="texgrey" type="2d" file="/home/chandandeep/Masterarbeit_ws/src/Masterarbeit/Code/Textures/cloth.png"/>
+    <texture name="texgrey" type="2d" file="/home/chandandeep/Masterarbeit_ws/src/Masterarbeit/Code/Packages/dm_control/dm_control/suite/Textures/cloth.png"/>
 <!--        <texture name="texcarpet" type="2d" file="pattern.png"/>-->
-	<texture name="texcorner4" type="2d" file="/home/chandandeep/Masterarbeit_ws/src/Masterarbeit/Code/Textures/cloth.png"/>
+	<texture name="texcorner4" type="2d" file="/home/chandandeep/Masterarbeit_ws/src/Masterarbeit/Code/Packages/dm_control/dm_control/suite/Textures/cloth.png"/>
 <!--        <texture name="texsponge" type="2d" file="sponge.png"/>-->
-	<texture name="texcorner" type="2d" file="/home/chandandeep/Masterarbeit_ws/src/Masterarbeit/Code/Textures/cloth.png"/>
-	<texture name="texmarble" type="cube" file="/home/chandandeep/anaconda3/envs/rlpyt/lib/python3.7/site-packages/dm_control/suite/marble.png"/>
+	<texture name="texcorner" type="2d" file="/home/chandandeep/Masterarbeit_ws/src/Masterarbeit/Code/Packages/dm_control/dm_control/suite/Textures/cloth.png"/>
+	<texture name="texmarble" type="cube" file="/home/chandandeep/Masterarbeit_ws/src/Masterarbeit/Code/Packages/dm_control/dm_control/suite/Textures/marble.png"/>
 <!--        <texture name=""-->
 <!--        <texture name="textwhite" type="2d" file="/home/yilin/Downloads/pattern2.png"/>-->
         <material name="matplane" reflectance="0.3" texture="texplane" texrepeat="1 1" texuniform="true"/>

@@ -58,6 +58,8 @@ from dm_control.suite import cloth_two_hand
 from dm_control.suite import rope_v1
 from dm_control.suite import rope_v2
 from dm_control.suite import rope_sac
+from dm_control.suite import cloth_sewts_exp1
+from dm_control.suite import cloth_sewts_exp2
 
 # Find all domains imported.
 _DOMAINS = {name: module for name, module in locals().items()

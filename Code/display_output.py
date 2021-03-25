@@ -6,7 +6,7 @@ import tkinter
 import numpy as np
 
 # env_id = 'cloth_v0'
-env_id = 'cloth_sewts_exp1'
+env_id = 'cloth_sewts_exp2'
 path_to_csv = os.getcwd() + '/output/' + env_id + "/log.csv"
 df = pd.read_csv(path_to_csv)
 img_path = []
@@ -25,28 +25,30 @@ for i in range(total):
     action.append(df.Action.iloc[i])
     reward.append(df.Reward.iloc[i])
 
-# print(img_path[0])
-# img = Image.open(img_path)
-# print(img)
-# img = img.thumbnail((400, 400))
-# img.show()
-# image.thumbnail((400, 400))
-# root = tkinter.Tk()
-# photo_img = ImageTk.PhotoImage(img)
-# l = tkinter.Label(root, image = photo_img)
-# l.pack()
-# print(l)
-# print(photo_img)
 i = 0
+no_steps = max(stepno)
 while i<total:
     layout = [  [sg.Text("GAME NO.",font=("Arial", 15)), sg.Text(gameno[i],font=("Arial", 15)),sg.Text("STEP NO.",font=("Arial", 15)) , sg.Text(stepno[i],font=("Arial", 15))],
                 [sg.Text("STATE",font=("Arial", 15)),sg.Image(img_path[i]),sg.Text(state[i],font=("Arial", 15))],
                 [sg.Text("ACTION",font=("Arial", 15)) , sg.Text(action[i],font=("Arial", 15)), sg.Text("REWARD",font=("Arial", 15)), 
                 sg.Text(reward[i],font=("Arial", 15))],
-                [sg.Button('NEXT',font=("Arial", 15))]
+                [sg.Button('NEXT',font=("Arial", 15)),
+                sg.Combo(gameno, size=(10, 5), enable_events=False, key = 'SELECT_GAME'),
+                sg.Combo(stepno, size=(10, 5), enable_events=False, key = 'SELECT_STEP'),
+                sg.Button('GOTO',font=("Arial", 15))]
                 ]
     window = sg.Window('Window Title', layout)      # Part 3 - Window Defintion
     event, values = window.read()
     if event == 'NEXT':
         i = i + 1
         window.close()
+    if event == 'GOTO':
+        #if event == 'SELECT_GAME' and event =='SELECT_STEP':
+        game = values['SELECT_GAME']
+        step = values['SELECT_STEP']
+        i =  (game-1) * 1000 + step - 1
+        # i = (int(values['SELECT_GAME'])-1)*max(values['SELECT_STEP']) + values['SELECT_STEP']
+        # i = values['SELECT_STEP']
+        # i = (1000-1)*max(values['SELECT_STEP']) + values['SELECT_STEP']
+        print(i)
+        window.close()    

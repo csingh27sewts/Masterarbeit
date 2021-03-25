@@ -147,7 +147,7 @@ if __name__ == '__main__':
             step += 1
 
             # Define terminal state (Max no. of steps 100 or when we reach close to the maximum reward of 0)
-            if step == 10:
+            if step == 100:
             # if step == 10000 or reward > -0.005: # No. of steps should be > batch size of 250 as the agent learns only when the batch is full
                 done = True
 
@@ -166,7 +166,7 @@ if __name__ == '__main__':
             
             # Add a logger to capture states, rewards, actions coupled with the images captured to understand how the agent operates
             log_dict["Image"].append(img_loc)
-            log_dict["Game_no"].append(game_no)
+            log_dict["Game_no"].append(i + 1)
             log_dict["Step_no"].append(step)
             log_dict["State"].append(observation)
             log_dict["Action"].append(action)

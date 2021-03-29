@@ -16,13 +16,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import itertools
 import inspect
-from SAC.sac_torch import Agent
-from SAC.utils import plot_learning_curve
 import os
 import torch as T
 import pandas as pd
 import sys
 np.set_printoptions(threshold=sys.maxsize)
+
+from SAC.utils import plot_learning_curve
 
 if __name__ == '__main__':
    
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     
 
     # Define main variables 
-    n_games = 10        
+    n_games =  10       
     score_max = []
     time_step_counter_max = []
 
@@ -49,33 +49,24 @@ if __name__ == '__main__':
     # Define action space and action shape
     action_space = env.action_spec()
     action_shape = action_space.shape[0]
+    action_max = env.action_spec().maximum
+    action_min = env.action_spec().minimum
 
     # Define observation space and observation shape
     observation_space = env.observation_spec()
     observation_shape = observation_space['position'].shape
     print(observation_shape)
     # Initialize SAC Agent 
-    agent = Agent(alpha=0.0003, beta=0.0003, reward_scale=2, env_id=env_id, 
-                input_dims= observation_shape, tau=0.005,
-                env=env, batch_size=256, layer1_size=256, layer2_size=256,
-                n_actions=action_shape)
 
     # create output folder for current experiment
-    path_to_output = os.getcwd() + '/output'
+    path_to_output = os.getcwd() + '/output/cloth_minimal_main_2/'
     os.chdir(path_to_output)
     if not os.path.exists(env_id):
         subprocess.call(["mkdir","-p", env_id])
     
     # create experiment
-    path_to_environment = path_to_output + '/' + env_id
+    path_to_environment = path_to_output + env_id
     os.chdir(path_to_environment)
-
-    # Load models from checkpoint
-    load_checkpoint = False
-    if load_checkpoint:
-        agent.load_models()
-        #viewer.launch(env)
-    
     
     # Define log dictionary  
     log_dict = {
@@ -94,13 +85,22 @@ if __name__ == '__main__':
         
         # Reset environment
         time_step = env.reset()
-
+        #image_data = env.physics.render(width = 640, height = 480, camera_id = 1)
+        #plt.imshow(image_data)
+        #plt.show()
         # Define variables
         observation = time_step.observation['position']
         reward_history = []
         step = 0
         reward = 0
         done = False
+        
+        # Setting time
+        for init_step in range(300):
+            env.step(np.array([0.,0.,0.]))
+        #image_random = env.physics.render(width = 640, height = 480, camera_id = 1)
+        #plt.imshow(image_random)
+        #plt.show()
 
         # Change directory to current environment path
         os.chdir(path_to_environment)
@@ -112,6 +112,13 @@ if __name__ == '__main__':
         # Display current game no.
         print("GAME NO.", i,"\n")
 
+        def define_action():
+            action = np.random.uniform(low=action_min,
+            high=0,
+            size=action_shape)
+            # action = np.random.uniform([-1.,0.,0.])
+            return action
+
         while done is False : 
 
             # Move to game folder
@@ -119,11 +126,13 @@ if __name__ == '__main__':
             os.chdir(path_to_game)
             
             # Take action 
-            action = agent.choose_action(observation)
+            # action = np.random.uniform(low=action_min,
+            #               high=action_max,
+            #               size=action_shape)
             # print("ACTION \n")
             # print(action) # Print action, uncomment to display
-            action[1] = 0.
-            action[2] = 0. # Uncomment for cloth_sewts_v1 / v2 env
+            # action[2] = 0. # Uncomment for cloth_sewts_v1 / v2 env
+            action = define_action()
             time_step = env.step(action)
             print("TIME STEP\n")
             print(time_step)
@@ -148,16 +157,16 @@ if __name__ == '__main__':
             step += 1
 
             # Define terminal state (Max no. of steps 100 or when we reach close to the maximum reward of 0)
-            if step == 1000:
+            if step == 100:
             # if step == 10000 or reward > -0.005: # No. of steps should be > batch size of 250 as the agent learns only when the batch is full
                 done = True
 
             # Add current observation, action, reward and next observation to the Replay Buffer
-            agent.remember(observation, action, reward, observation_, done)
+            # agent.remember(observation, action, reward, observation_, done)
             
             # Learn parameters of SAC Agent
-            if not load_checkpoint:
-                agent.learn()
+            # if not load_checkpoint:
+            #    agent.learn()
             
             # Update observation with next observation
             observation = observation_
@@ -174,8 +183,8 @@ if __name__ == '__main__':
             log_dict["Reward"].append(reward)
 
             # Save agent models
-            if not load_checkpoint:
-                agent.save_models()
+            # if not load_checkpoint:
+            #    agent.save_models()
 
         # Get maximum reward for the current game
         score_max.append(np.amax(reward_history))

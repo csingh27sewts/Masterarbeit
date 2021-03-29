@@ -7,7 +7,10 @@ import numpy as np
 
 # env_id = 'cloth_v0'
 env_id = 'cloth_sewts_exp2'
-path_to_csv = os.getcwd() + '/output/' + env_id + "/log.csv"
+n_games = 1000
+path_to_csv = os.getcwd() + '/output/cloth_minimal_main_2/' + env_id + "/log.csv"
+# path_to_csv = os.getcwd() + '/output/' + env_id + "/log.csv"
+# path_to_csv = '/home/chandandeep/Masterarbeit_ws/src/Masterarbeit_output/output/cloth_sewts_exp2_attempt#2/log.csv'
 df = pd.read_csv(path_to_csv)
 img_path = []
 gameno = []
@@ -46,7 +49,7 @@ while i<total:
         #if event == 'SELECT_GAME' and event =='SELECT_STEP':
         game = values['SELECT_GAME']
         step = values['SELECT_STEP']
-        i =  (game-1) * 1000 + step - 1
+        i =  (game-1) * n_games + step - 1
         # i = (int(values['SELECT_GAME'])-1)*max(values['SELECT_STEP']) + values['SELECT_STEP']
         # i = values['SELECT_STEP']
         # i = (1000-1)*max(values['SELECT_STEP']) + values['SELECT_STEP']

@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
 
     # LOOP TILL time_step_counter
-    while not time_step.last() and time_step_counter < 100:
+    while not time_step.last() and time_step_counter < 1000:
         # TAKE RANDOM ACTION IN X,Y DIRECTION
         action = np.random.uniform(low=action_spec.minimum,
                            high=action_spec.maximum,
@@ -104,7 +104,7 @@ if __name__ == '__main__':
 
     # PLOT REWARDS 
     time_steps = [i for i in range(time_step_counter)]
-    plt.plot(reward, time_steps)
+    plt.plot(time_steps, reward)
     plt.show()
     plt.savefig('plot.jpg')
     # MAKE A VIDEO

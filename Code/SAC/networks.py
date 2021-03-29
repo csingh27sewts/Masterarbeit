@@ -119,6 +119,8 @@ class ActorNetwork(nn.Module):
         # since for max_action = 1 it is not needed
         action = T.tensor(actions) * T.from_numpy(self.max_action).float().to(self.device)
         print("ACTIONS")
+        print(mu,sigma)
+        print(probabilities)
         print(action)
 
         # Take log_probs of action, i.e. log(p(a|pi_theta(s))

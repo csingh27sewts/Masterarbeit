@@ -18,11 +18,15 @@ import itertools
 import inspect
 import os
 import torch as T
+import torch.optim as optim
 import pandas as pd
 import sys
+from SAC.buffer import ReplayBuffer
 np.set_printoptions(threshold=sys.maxsize)
 
 from SAC.utils import plot_learning_curve
+from SAC import buffer
+import pandas as pd
 
 if __name__ == '__main__':
    
@@ -34,12 +38,12 @@ if __name__ == '__main__':
     # /home/chandandeep/anaconda3/envs/rlpyt/lib/python3.7/site-packages/dm_control/suite/
     # Choose environment
     # env_id = 'cloth_v0'
-    env_id = 'cloth_sewts_exp2'
+    env_id = 'cloth_sewts_exp2_2'
     # env_id = 'cloth_v0'
     
 
     # Define main variables 
-    n_games =  10       
+    n_games =  1       
     score_max = []
     time_step_counter_max = []
 
@@ -55,7 +59,8 @@ if __name__ == '__main__':
     # Define observation space and observation shape
     observation_space = env.observation_spec()
     observation_shape = observation_space['position'].shape
-    print(observation_shape)
+    print("Observation Space")
+    print(observation_space)
     # Initialize SAC Agent 
 
     # create output folder for current experiment
@@ -78,7 +83,124 @@ if __name__ == '__main__':
                 "Reward" : []
                 }
 
-    log_file = path_to_environment + "/log.csv"
+    
+    log_file = path_to_environment + "/log_minimal.csv"
+    log_good_file = path_to_output + "/log_good.csv"
+
+    # df_good_reward = pd.read_csv(log_good_file)
+
+    # Initialize Replay Buffer
+    max_size = 1000
+    input_dims = observation_shape
+    n_actions = action_shape
+    memory = ReplayBuffer(max_size, input_dims, n_actions)
+
+    # Replay Buffer Filtered based on reward values
+
+    # States and actions used to train the NN
+
+    def train_nn(df):
+            
+        # Step 1. Random policy initially for a specific no. of steps say 250 
+        # Step 2. Collect states, actions, next_states, rewards in a replay buffer
+        # Step 3. Filter replay buffer based on reward values 
+        # Step 4. Store entries with > -0.10 in a new replay buffer
+        # Step 5. Feed state and action values from new replay buffer to a neural network (Train it)
+        # Step 6. Test on new states for the learnt parameters of the neural network
+        
+        beta = 0.01
+        fc1_dims = 250
+        print(observation.shape)
+        print(fc1_dims)
+        print(n_actions)
+        fc1_layer = T.nn.Sequential(T.nn.Linear(observation.shape[0], fc1_dims)
+                    ,T.nn.Linear(fc1_dims, n_actions))
+        T.optimizer = optim.Adam(fc1_layer.parameters(), lr=beta)
+        # T.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
+        # T.to(T.device) 
+
+        # nn_state = []
+        # nn_action = []      
+        # nn_state_ = []
+        # nn_reward = []
+        # nn_done = []
+        pred_action = []
+        
+        rewards = [reward for reward in df[df.columns[6]]]
+        rewards = np.array(list(rewards))
+        states = [state for state in df[df.columns[4]]]
+        states = np.array(list(states))
+        actions = [action for action in df[df.columns[5]]]
+        actions = np.ndarray(list(actions), type = float)
+        print(rewards)
+        print(states)
+        print(actions)
+        
+        # for i in range(len(rewards)):
+            # states[i] = np.ndarray(list(states[i]),dtype = float)
+            # print(states[i])
+            # states[i] = T.from_numpy(states[i])
+            # print(type(states[i]))
+            # print(states[i])
+            # states[i] = T.tensor(states[i], dtype = T.float)
+            # pred_action.append(fc1_layer(states[i]))
+        
+        # print(pred_action)
+        
+        # for i in range(memory.mem_cntr):
+        #    nn_state.append(memory.state_memory[memory.mem_cntr])
+        #    nn_action.append(memory.action_memory[memory.mem_cntr])
+        #    nn_state_.append(memory.new_state_memory[memory.mem_cntr])
+        #    nn_reward.append(memory.reward_memory[memory.mem_cntr])
+        #    nn_done.append(memory.terminal_memory[memory.mem_cntr])
+        #    print("-----------------")
+        #    print(i)
+        #    print(nn_state[i])
+        #    print(nn_action[i])
+        #    print(nn_state_[i])
+        #    print(nn_reward[i])
+            
+         
+        #for i in range(memory.mem_cntr):
+         #   pred_action.append(fc1_layer(T.tensor(nn_state[i], dtype = T.double)))
+         #   print("Fed")
+         #   print(nn_state[i])
+         #   print(nn_action[i])
+         #   print("Predicted")
+         #   print(pred__action[i])
+         #   print("\n")
+         #   print(fc1_layer.parameters())
+
+    def random_policy():
+
+        # POLICY TYPE 5 - Actions proportional to the step in the range [-1,0] (Just pulling away in (x,y,z) direction
+        # action = np.random.uniform(low=action_min*step*0.01,
+        # high=0,
+        # size=action_shape)
+
+        # POLICY TYPE 4 - Random actions in the range [-1,0] (Just pulling away) in (x,y,z) direction 
+        # action = np.random.uniform(low=action_min,
+        # high=action_max,
+        # size=action_shape)
+
+        # POLICY TYPE 3 - Random actions in the range [-1,1] in (x,y) direction 
+        # action = np.random.uniform(low=action_min,
+        # high=action_max,
+        # size=action_shape)
+        # action[2] = 0.
+
+        # POLICY TYPE 2 - Random actions in the range [-1,1] in (x,y,z) direction 
+        action = np.random.uniform(low=action_min,
+        high=action_max,
+        size=action_shape)
+
+        # POLICY TYPE 1 - Pulling in x direction by fixed amount
+        #action = np.random.uniform([-1.,0.,0.])
+        #action = np.array([0., 0., 0.])
+        return action
+
+        # Reading log_good.csv
+
 
     # Loop for a no. of games
     for i in range(n_games):
@@ -92,11 +214,11 @@ if __name__ == '__main__':
         observation = time_step.observation['position']
         reward_history = []
         step = 0
-        reward = 0
+        reward = -0.45
         done = False
         
         # Setting time
-        for init_step in range(300):
+        for init_step in range(500):
             env.step(np.array([0.,0.,0.]))
         #image_random = env.physics.render(width = 640, height = 480, camera_id = 1)
         #plt.imshow(image_random)
@@ -111,13 +233,7 @@ if __name__ == '__main__':
 
         # Display current game no.
         print("GAME NO.", i,"\n")
-
-        def define_action():
-            action = np.random.uniform(low=action_min,
-            high=0,
-            size=action_shape)
-            # action = np.random.uniform([-1.,0.,0.])
-            return action
+        
 
         while done is False : 
 
@@ -131,8 +247,15 @@ if __name__ == '__main__':
             #               size=action_shape)
             # print("ACTION \n")
             # print(action) # Print action, uncomment to display
+            #            action[1] = 0.
+            # action = define_policy(step)
+            observation = time_step.observation['position']
+            if step < 100:
+                action = random_policy()
+            #else:
+            #    train_nn(df_good_reward)
+            # action[1] = 0. # Uncomment for cloth_sewts_v1 / v2 env
             # action[2] = 0. # Uncomment for cloth_sewts_v1 / v2 env
-            action = define_action()
             time_step = env.step(action)
             print("TIME STEP\n")
             print(time_step)
@@ -140,6 +263,11 @@ if __name__ == '__main__':
             # Get next observation and reward
             observation_ = time_step.observation['position']
             reward = time_step.reward
+
+            # Store transitions with good rewards
+            if step < 100 and reward > -0.15:
+                ReplayBuffer.store_transition(memory, observation, action, reward, observation_, done)
+            
             # print(observation_) # Print oberservation
             # print(reward) # Print reward
 
@@ -152,12 +280,12 @@ if __name__ == '__main__':
             img_loc = path_to_game + "/frame-%.10d.png" % step
             img_name = "frame-%.10d.png" % step
             img.save(img_name)
-            
+            # img.show()        
             # Increment step
             step += 1
 
             # Define terminal state (Max no. of steps 100 or when we reach close to the maximum reward of 0)
-            if step == 100:
+            if step == 101:
             # if step == 10000 or reward > -0.005: # No. of steps should be > batch size of 250 as the agent learns only when the batch is full
                 done = True
 
@@ -207,7 +335,10 @@ if __name__ == '__main__':
                         ])
     
     # In case you want to save the log_dict in a separate log.txt file
-    df = pd.DataFrame(log_dict).to_csv(log_file, header = True, index = False)
+    df = pd.DataFrame(log_dict)
+    df.to_csv(log_file, header = True, index = False)
+    #df_good = df[df.Reward > -0.10] 
+    #df_good.to_csv(log_good_file, mode = 'a', header = False)
     # df.to_csv(log_file)
     # df = pd.read_csv(log_file, index_col=0)
     # print(df)
@@ -219,5 +350,3 @@ if __name__ == '__main__':
     #for value in log_dict.items():
     #    text_file.writerow([value])
     # file_csv.close()
-
-

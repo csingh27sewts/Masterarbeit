@@ -13,3 +13,6 @@
 [submodule "Packages/dm_env"]
 	path = Packages/dm_env
 	url = https://github.com/wilson1yan/dm_env.git
+[submodule "Code/Packages/abr_control"]
+	path = Code/Packages/abr_control
+	url = https://github.com/abr/abr_control.git

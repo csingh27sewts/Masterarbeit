@@ -16,7 +16,12 @@ class Agent():
         self.memory = ReplayBuffer(max_size, input_dims, n_actions)
         self.batch_size = batch_size
         self.n_actions = n_actions
-        
+        self.learn_step = []
+        self.lstep = 0
+        #self.value_collect = []
+        #self.critic_collect = []
+        #self.target_value_collect = []
+        #self.entropy_collect = []
         print("Actions", n_actions)
         # Initialize actor network
         self.actor = ActorNetwork(alpha, input_dims, layer1_size,
@@ -63,7 +68,7 @@ class Agent():
         # Would not start learning till the ReplayBuffer is filled up to the batch size, 256
         if self.memory.mem_cntr < self.batch_size:
             return
-
+        
         state, action, reward, new_state, done = \
                 self.memory.sample_buffer(self.batch_size)
         reward = T.tensor(reward, dtype=T.float).to(self.critic_1.device)
@@ -127,7 +132,16 @@ class Agent():
         self.critic_2.optimizer.step()
 
         # Update network parameters for the Target Value Network
-        self.update_network_parameters()
+        #self.value_collect = []
+        #self.update_network_parameters()
+        #self.value_collect.append(value)
+        #self.critic_collect.append(critic_value)
+        #self.target_value_collect.append(value_)
+        #self.entropy_collect.append(log_probs)
+        #self.learn_step.append(self.lstep)
+        #self.lstep += 1
+        
+        return state, state_, action, actions, reward, value, value_target, critic_value, log_probs
 
     def update_network_parameters(self, tau=None):
         

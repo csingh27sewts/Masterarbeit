@@ -34,12 +34,12 @@ if __name__ == '__main__':
     # /home/chandandeep/anaconda3/envs/rlpyt/lib/python3.7/site-packages/dm_control/suite/
     # Choose environment
     # env_id = 'cloth_v0'
-    env_id = 'cloth_sewts_exp2'
+    env_id = 'cloth_sewts_exp2_2'
     # env_id = 'cloth_v0'
     
 
     # Define main variables 
-    n_games = 10        
+    n_games = 1        
     score_max = []
     time_step_counter_max = []
 
@@ -84,11 +84,22 @@ if __name__ == '__main__':
                 "Step_no" : [],
                 "State" : [],
                 "Action" : [],
-                "Reward" : []
+                "Reward" : [],
+                }
+    log_sac_dict = {
+#                "State" : [],
+#                "Next_State" : [],
+#                "Action" : [],
+#                "Sampled_Action" : [],
+                "Reward" : [],
+                "Value" : [],
+                "Critic" : [],
+                "Target_Value" : [],
+                "Entropy" : []
                 }
 
     log_file = path_to_environment + "/log.csv"
-
+    log_sac_file = path_to_environment + "/log_sac.csv"
     # Loop for a no. of games
     for i in range(n_games):
         
@@ -98,10 +109,16 @@ if __name__ == '__main__':
         # Define variables
         observation = time_step.observation['position']
         reward_history = []
+        average_value = []
+        average_critic = []
+        average_entropy = []
         step = 0
         reward = 0
         done = False
 
+        for init_step in range(500):
+            env.step(np.array([0.,0.,0.]))
+        
         # Change directory to current environment path
         os.chdir(path_to_environment)
         
@@ -122,7 +139,7 @@ if __name__ == '__main__':
             action = agent.choose_action(observation)
             # print("ACTION \n")
             # print(action) # Print action, uncomment to display
-            action[1] = 0.
+            # action[1] = 0.
             action[2] = 0. # Uncomment for cloth_sewts_v1 / v2 env
             time_step = env.step(action)
             print("TIME STEP\n")
@@ -172,7 +189,26 @@ if __name__ == '__main__':
             log_dict["State"].append(observation)
             log_dict["Action"].append(action)
             log_dict["Reward"].append(reward)
-
+            if agent.learn() is not None:
+                #log_sac_dict["State"].append(agent.learn()[0].detach().numpy())
+                #log_sac_dict["Next_State"].append(agent.learn()[1].detach().numpy())
+                #log_sac_dict["Action"].append(agent.learn()[2].detach().numpy())
+                #log_sac_dict["Sampled_Action"].append(agent.learn()[3].detach().numpy())
+                log_sac_dict["Reward"].append(agent.learn()[4].detach().numpy())
+                log_sac_dict["Value"].append(agent.learn()[5].detach().numpy())
+                log_sac_dict["Target_Value"].append(agent.learn()[6].detach().numpy())
+                log_sac_dict["Critic"].append(agent.learn()[7].detach().numpy())
+                log_sac_dict["Entropy"].append(agent.learn()[8].detach().numpy())
+            else:
+                #log_sac_dict["State"].append(None)
+                #log_sac_dict["Next_State"].append(None)
+                #log_sac_dict["Action"].append(None)
+                #log_sac_dict["Sampled_Action"].append(None)
+                log_sac_dict["Reward"].append(None)
+                log_sac_dict["Value"].append(None)
+                log_sac_dict["Target_Value"].append(None)
+                log_sac_dict["Critic"].append(None)
+                log_sac_dict["Entropy"].append(None)
             # Save agent models
             if not load_checkpoint:
                 agent.save_models()
@@ -187,18 +223,98 @@ if __name__ == '__main__':
         figure_file = filename
         figure_file = os.path.join(os.getcwd(), figure_file)
 
-        # Plot learning curve
+        # Plot learning curves
+
+        subprocess.call([ 'mkdir', '-p', 'Plots' ])
+        os.chdir('Plots')
+
         x = [i for i in range(step)]
         plot_learning_curve(x, reward_history, figure_file)
+        for i in range(len(log_sac_dict["Entropy"])):
+            filename_entropy = env_id + '_'+ str(i) + 'plot_entropy.png'
+            figure_file_entropy = filename_entropy
+            figure_file_entropy = os.path.join(os.getcwd(), figure_file_entropy)
+            if(log_sac_dict["Entropy"][i]) is not None:
+                step_size = []
+                length = len(log_sac_dict["Entropy"][i])
+                average_entropy.append(sum(log_sac_dict["Entropy"][i]) / len(log_sac_dict["Entropy"][i]))
+                for j in range(length):
+                    step_size.append(j)
+                plot_learning_curve(step_size, log_sac_dict["Entropy"][i], figure_file_entropy)
+
+        for i in range(len(log_sac_dict["Value"])):
+            filename_value = env_id + '_'+ str(i) + 'plot_value.png'
+            figure_file_value = filename_value
+            figure_file_value = os.path.join(os.getcwd(), figure_file_value)
+            if(log_sac_dict["Value"][i]) is not None:
+                step_size = []
+                length = len(log_sac_dict["Value"][i])
+                average_value.append(sum(log_sac_dict["Value"][i]) / len(log_sac_dict["Value"][i]))
+                for j in range(length):
+                    step_size.append(j)
+                plot_learning_curve(step_size, log_sac_dict["Value"][i], figure_file_value)      
+        
+        for i in range(len(log_sac_dict["Critic"])):
+            filename_critic = env_id + '_'+ str(i) + 'plot_critic.png'
+            figure_file_critic = filename_critic
+            figure_file_critic = os.path.join(os.getcwd(), figure_file_critic)
+            if(log_sac_dict["Critic"][i]) is not None:
+                step_size = []
+                length = len(log_sac_dict["Critic"][i])
+                average_critic.append(sum(log_sac_dict["Critic"][i]) / len(log_sac_dict["Critic"][i]))
+                for j in range(length):
+                    step_size.append(j)
+                plot_learning_curve(step_size, log_sac_dict["Critic"][i], figure_file_critic)  
 
         filename = str(n_games)
         subprocess.call([
                         'ffmpeg', '-framerate', '50', '-y', '-i',
                         'frame-%010d.png', '-r', '30', '-pix_fmt', 'yuv420p','video.mp4'                
                         ])
+
+        # os.chdir(path_to_environment)
+        
+        filename_average_critic = str(i) + 'plot_average_critic.png'
+        figure_file_average_critic = filename_average_critic
+        figure_file_average_critic = os.path.join(os.getcwd(), figure_file_average_critic)
+
+
+        filename_average_value = str(i) + 'plot_average_value.png'
+        figure_file_average_value = filename_average_value
+        figure_file_average_value = os.path.join(os.getcwd(), figure_file_average_value)       
+
+        filename_average_entropy = str(i) + 'plot_average_entropy.png'
+        figure_file_average_entropy = filename_average_entropy
+        figure_file_average_entropy = os.path.join(os.getcwd(), figure_file_average_entropy)
+
+        steps_avg = []
+        for x in range(len(average_value)):
+            steps_avg.append(x)
+        
+        print(steps_avg)
+        print(average_entropy)
+        print(figure_file_average_entropy)
+
+        plot_learning_curve(steps_avg, average_entropy, figure_file_average_entropy)  
+        plot_learning_curve(steps_avg, average_critic, figure_file_average_critic)  
+        plot_learning_curve(steps_avg, average_value, figure_file_average_value)  
     
     # In case you want to save the log_dict in a separate log.txt file
     df = pd.DataFrame(log_dict).to_csv(log_file, header = True, index = False)
+    # print("Reward")
+    # print(len(log_sac_dict["Reward"][260]))
+    # print("Value \n")
+    # print(len(log_sac_dict["Value"][260]))
+    # print("Target Value \n")
+    # print(len(log_sac_dict["Target_Value"][260]))
+    # print("Critic \n")
+    # print(len(log_sac_dict["Critic"][260]))
+    # print("Entropy  \n")   
+    # print(len(log_sac_dict["Entropy"][260]))
+
+    print(log_sac_dict.keys())
+    df = pd.DataFrame(log_sac_dict).to_csv(log_sac_file, header = True, index = False)
+
     # df.to_csv(log_file)
     # df = pd.read_csv(log_file, index_col=0)
     # print(df)
@@ -210,5 +326,64 @@ if __name__ == '__main__':
     #for value in log_dict.items():
     #    text_file.writerow([value])
     # file_csv.close()
+
+    # Define filenames to store network output plots
+    # os.chdir(path_to_environment)
+    # path_to_plots = path_to_environment + '/Plots/'
+    # print(path_to_plots)
+
+    # if not os.path.exists(path_to_plots):
+    #    subprocess.call(["mkdir","-p", "Plots"])
+
+       
+    # filename_critic = env_id + '_'+ str(n_games) + 'plot_critic.png'
+    # figure_file_critic = filename_critic
+    # figure_file_critic = os.path.join(path_to_plots, figure_file_critic)
+
+    # filename_target_value = env_id + '_'+ str(n_games) + 'plot_target_value.png'
+    # figure_file_target_value = filename_target_value
+    # figure_file_target_value = os.path.join(path_to_plots, figure_file_target_value)
+
+    # filename_entropy = env_id + '_'+ str(n_games) + 'plot_entropy.png'
+    # figure_file_entropy = filename_entropy
+    # figure_file_entropy = os.path.join(path_to_plots, figure_file_entropy)
+
+    # Plot outputs of all neural networks implemented in SAC
+    # value = agent.value_collect
+    # critic = agent.critic_collect
+    # target_value = agent.target_value_collect
+    # entropy = agent.entropy_collect
+    # learn_step = agent.learn_step
+
+    # print(value)
+    # print(critic)
+    # print(target_value)
+    # print(entropy)
+    # print(learn_step)
+
+ 
+    #print("PLOTS\n")
+    #for j in range(len(value)):
+    #    value_plot = []
+    #    value_step = []     
+    #    filename_value = env_id + '_'+ str(j) + 'plot_value.png'
+    #    figure_file_value = filename_value
+    #    figure_file_value = os.path.join(path_to_plots, figure_file_value)
+
+    #    for i in range(len(value[j])):
+    #        value_plot.append(value[j].detach().numpy())
+    #        value_step.append(i)
+    #    plot_learning_curve(value_plot, value_step , figure_file_value)
+
+    #print(value)
+    #print(critic)
+    #print(target_value)
+    #print(entropy)
+    #print(learn_step)
+
+
+    #plot_learning_curve(learn_step, critic, figure_file_critic)
+    #plot_learning_curve(learn_step, target_value, figure_file_target_value)
+    #plot_learning_curve(learn_step, entropy, figure_file_entropy)
 
 

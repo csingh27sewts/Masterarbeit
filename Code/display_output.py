@@ -6,9 +6,9 @@ import tkinter
 import numpy as np
 
 # env_id = 'cloth_v0'
-env_id = 'cloth_sewts_exp2'
-n_games = 1000
-path_to_csv = os.getcwd() + '/output/cloth_minimal_main_2/' + env_id + "/log.csv"
+env_id = 'cloth_corner'
+n_games = 1
+path_to_csv = os.getcwd() + '/output/' + env_id + "/log.csv"
 # path_to_csv = os.getcwd() + '/output/' + env_id + "/log.csv"
 # path_to_csv = '/home/chandandeep/Masterarbeit_ws/src/Masterarbeit_output/output/cloth_sewts_exp2_attempt#2/log.csv'
 df = pd.read_csv(path_to_csv)
@@ -32,14 +32,14 @@ i = 0
 no_steps = max(stepno)
 while i<total:
     layout = [  [sg.Text("GAME NO.",font=("Arial", 15)), sg.Text(gameno[i],font=("Arial", 15)),sg.Text("STEP NO.",font=("Arial", 15)) , sg.Text(stepno[i],font=("Arial", 15))],
-                [sg.Text("STATE",font=("Arial", 15)),sg.Image(img_path[i]),sg.Text(state[i],font=("Arial", 15))],
+                [sg.Text("STATE",font=("Arial", 15)),sg.Image(img_path[i]),sg.Text(state[i],font=("Arial", 10))],
                 [sg.Text("ACTION",font=("Arial", 15)) , sg.Text(action[i],font=("Arial", 15)), sg.Text("REWARD",font=("Arial", 15)), 
                 sg.Text(reward[i],font=("Arial", 15))],
                 [sg.Button('NEXT',font=("Arial", 15)),
                 sg.Combo(gameno, size=(10, 5), enable_events=False, key = 'SELECT_GAME'),
                 sg.Combo(stepno, size=(10, 5), enable_events=False, key = 'SELECT_STEP'),
-                sg.Button('GOTO',font=("Arial", 15))]
-                ]
+                sg.Button('GOTO',font=("Arial", 15))],
+                [sg.Button('CLOSE',font=("Arial", 15))]]
     window = sg.Window('Window Title', layout)      # Part 3 - Window Defintion
     event, values = window.read()
     if event == 'NEXT':
@@ -55,3 +55,6 @@ while i<total:
         # i = (1000-1)*max(values['SELECT_STEP']) + values['SELECT_STEP']
         print(i)
         window.close()    
+    if event == 'CLOSE':
+        window.close()
+        exit()

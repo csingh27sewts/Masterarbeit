@@ -33,7 +33,7 @@ if __name__ == '__main__':
     
     # LOAD TASK
     print(inspect.getfile(dm_control))
-    env = suite.load(domain_name="cloth_sewts_exp2", task_name="easy") 
+    env = suite.load(domain_name="cloth_sewts_exp2_2", task_name="easy") 
     # env = suite.load(domain_name="cloth_sewts_exp2", task_name="easy") 
 
     # DEFINE ACTION SPEC 
@@ -92,7 +92,7 @@ if __name__ == '__main__':
         image_data = env.physics.render(width = 640, height = 480, camera_id = 1)
         img = Image.fromarray(image_data, 'RGB')
         img.save("frames_minimal_2/frame-%.10d.png" % time_step_counter)
-
+        img.show()
         # UPDATE TIME STEP
         time_step_counter += 1
         # LAUNCH WITH A FIXED POLICY (IF DEFINED)

@@ -97,12 +97,18 @@ a) Initialize sampler
 n_envs_list = [2, 2, 2, 2, 2, 2, 1, 1, 1, 1]
 n_workers = 10
 batch_spec = BatchSpec(T=1, B=16)
+batch_spec.size = T * B = 16
 B = 16
 env_ranks = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 world_size = 1
 rank = 0
 eval_n_envs = 10
 eval_n_envs_per = 1 
+log_intervals_itrs = 100000
+itr_batch_size = 16
+log_interval_itrs = 100000 / 16 = 6250
+n_steps = 200000
+n_itr = 12500
 Define and initialize env space (observation space and action space) in DM Control and convert to rlpyt
 Define and initialze Agent (Q model and Target Q model) for the given environment spaces
 b) Initialize agent

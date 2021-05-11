@@ -83,4 +83,4 @@ def simulation(action):
 
         print("Simulation terminated...")
 
-#simulation([0.4,0.3,0.1])
+# simulation([0.4,0.3,0.1])

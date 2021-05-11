@@ -35,12 +35,14 @@ if __name__ == '__main__':
     # /home/chandandeep/anaconda3/envs/rlpyt/lib/python3.7/site-packages/dm_control/suite/
     # Choose environment
     # env_id = 'cloth_v0'
-    env_id = 'cloth_sewts_exp2_2'
-    # env_id = 'cloth_corner'
+    # env_id = 'cloth_sewts_exp2_2'
+    env_id = 'cloth_corner'
     
 
     # Define main variables 
-    n_games = 1       
+    # total steps = 500000 0> n_games = 50, n_steps = 10000
+    n_games = 5
+    # n_games = 50       
     score_max = []
     time_step_counter_max = []
 
@@ -54,13 +56,15 @@ if __name__ == '__main__':
     # Define observation space and observation shape
     observation_space = env.observation_spec()
     observation_shape = observation_space['position'].shape
-    # print(observation_shape)
+    print(observation_shape)
     
     # Initialize SAC Agent 
-    agent = Agent(alpha=0.003, beta=0.003, reward_scale=2, env_id=env_id, 
+    agent = Agent(alpha=0.0006, beta=0.0003, reward_scale=1, env_id=env_id, 
+    # agent = Agent(alpha=0.0003, beta=0.0003, reward_scale=2, env_id=env_id, 
                 input_dims= observation_shape, tau=0.005,
-                env=env, batch_size=25, layer1_size=256, layer2_size=256,
-                n_actions=action_shape)
+    #            env=env, batch_size=1024, layer1_size=256, layer2_size=256,
+                 env=env, batch_size=256,layer1_size=256, layer2_size=256,
+               n_actions=action_shape)
 
     # create output folder for current experiment
     path_to_output = os.getcwd() + '/output'
@@ -138,7 +142,9 @@ if __name__ == '__main__':
         done = False
 
         for init_step in range(500):
-            env.step(np.array([0.,0.,0.]))
+            # env.step(np.array([0.,0.])) # for cloth_sewts_exp2_2
+            env.step(np.array([0.,0.,0.])) # for cloth_corner
+
         
         # Change directory to current environment path
         os.chdir(path_to_environment)
@@ -165,14 +171,23 @@ if __name__ == '__main__':
             # action[1] = 0.
             # Do not artificially change one action component. The agent gives the action [x,y,z] which would move it closer to goal
             # Changing one component is essentially not using what the policy predicts. Change in the main file if you need to.
-            action_fed = np.array([action[0], action[1], 0.])
+            print("ACTION IT IS \n")
+            # action = np.array([1,1,0])
+            print(action)
+            action_fed = np.array([action[0], action[1], action[2]]) #cloth_corner
+            # action_fed = np.array([action[0], action[1]])
+            print(action_fed)
             # action[2] = 0. # Uncomment for cloth_sewts_v1 / v2 env
             time_step = env.step(action_fed)
             # Inference in simulation
             # print("ACTION FED")
             # print(action_fed)
+            
+            # INFERENCE IN SIMULATION !
             if load_checkpoint:
                 simulation(action_fed)
+            
+            
             # print("TIME STEP\n")
             # print(time_step)
 
@@ -184,7 +199,7 @@ if __name__ == '__main__':
 
             # Render image from environment for the time step and save
             # viewer.launch(env)
-            image_data = env.physics.render(width = 640, height = 480, camera_id = 1)
+            image_data = env.physics.render(width = 64, height = 64 , camera_id = 0)
             #img = Image.open(image_data)
             # image_array = np.asarray(image_data)
             # print("Saving frames")
@@ -200,8 +215,8 @@ if __name__ == '__main__':
             step += 1
 
             # Define terminal state (Max no. of steps 100 or when we reach close to the maximum reward of 0)
-            # if step == 10:
-            if step == 30 or reward > 9.0 and step > 30:
+            if step == 5000 or reward > 9.0 and step > 500:
+            # if step == 10000 or reward > 9.0 and step > 10000:
             # if step == 10000 or reward > -0.005: # No. of steps should be > batch size of 250 as the agent learns only when the batch is full
                 done = True
 
@@ -217,14 +232,14 @@ if __name__ == '__main__':
                 # agent.value.v.weight.data.fill_(0.1)
                 # agent.value.v.bias.data.fill_(0.1)
                 # T.nn.init.uniform_(T.empty(3, 5))
-                T.save(agent.value.state_dict(), '/home/chandandeep/Masterarbeit_ws/src/Masterarbeit/Code/output/cloth_sewts_exp2_2/checkpoint_tmp/init_value.ckpt')
+                T.save(agent.value.state_dict(), os.path.join(path_to_environment,'checkpoint_tmp/init_value.ckpt'))
                 #obs_trial = [0]*12
                 #obs_trial = T.tensor(obs_trial)
                 #print("OBS TRIAL \n")
                 #print(agent.value(obs_trial))
-                T.save(agent.actor.state_dict(), '/home/chandandeep/Masterarbeit_ws/src/Masterarbeit/Code/output/cloth_sewts_exp2_2/checkpoint_tmp/init_actor.ckpt')
-                T.save(agent.critic_1.state_dict(), '/home/chandandeep/Masterarbeit_ws/src/Masterarbeit/Code/output/cloth_sewts_exp2_2/checkpoint_tmp/init_critic.ckpt')
-                T.save(agent.target_value.state_dict(), '/home/chandandeep/Masterarbeit_ws/src/Masterarbeit/Code/output/cloth_sewts_exp2_2/checkpoint_tmp/init_target_value.ckpt')
+                T.save(agent.actor.state_dict(), os.path.join(path_to_environment, 'checkpoint_tmp/init_actor.ckpt'))
+                T.save(agent.critic_1.state_dict(),  os.path.join(path_to_environment,'checkpoint_tmp/init_critic.ckpt'))
+                T.save(agent.target_value.state_dict(), os.path.join(path_to_environment,'checkpoint_tmp/init_target_value.ckpt'))
                 agent.learn()
             
             # Update observation with next observation
@@ -357,18 +372,22 @@ if __name__ == '__main__':
         step_size = []
         #if(log_sac_loss_dict["Value_loss"]) is not None:
         length = len(log_sac_loss_dict["Value_loss"])
+        print(log_sac_loss_dict["Value_loss"])
         for j in range(length):
             step_size.append(j)
             if(log_sac_loss_dict["Value_loss"][j]):
-                log_sac_loss_dict["Value_loss"][j] = log_sac_loss_dict["Value_loss"][j].item()
+                if(isinstance(log_sac_loss_dict["Value_loss"][j], np.ndarray)):
+                    log_sac_loss_dict["Value_loss"][j] = log_sac_loss_dict["Value_loss"][j].item()
             else:
                 log_sac_loss_dict["Value_loss"][j] = 0  
             if(log_sac_loss_dict["Critic_loss"][j]):
-                log_sac_loss_dict["Critic_loss"][j] = log_sac_loss_dict["Critic_loss"][j].item()
+                if(isinstance(log_sac_loss_dict["Critic_loss"][j], np.ndarray)):
+                    log_sac_loss_dict["Critic_loss"][j] = log_sac_loss_dict["Critic_loss"][j].item()
             else:
                 log_sac_loss_dict["Critic_loss"][j] = 0
             if(log_sac_loss_dict["Actor_loss"][j]):
-                log_sac_loss_dict["Actor_loss"][j] = log_sac_loss_dict["Actor_loss"][j].item()
+                if(isinstance(log_sac_loss_dict["Actor_loss"][j], np.ndarray)):
+                    log_sac_loss_dict["Actor_loss"][j] = log_sac_loss_dict["Actor_loss"][j].item()
             else:
                 log_sac_loss_dict["Actor_loss"][j] = 0         
                        

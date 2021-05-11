@@ -74,8 +74,8 @@ class Agent():
                 self.memory.sample_buffer(self.batch_size)
         reward = T.tensor(reward, dtype=T.float).to(self.critic_1.device)
         done = T.tensor(done).to(self.critic_1.device)
-        print("DONE ! ")
-        print(done)
+        # print("DONE ! ")
+        # print(done)
         state_ = T.tensor(new_state, dtype=T.float).to(self.critic_1.device)
         state = T.tensor(state, dtype=T.float).to(self.critic_1.device)
         action = T.tensor(action, dtype=T.float).to(self.critic_1.device)
@@ -107,7 +107,7 @@ class Agent():
         self.value.optimizer.step()
 
         # Get actions from a new sample fed into the network
-        actions, log_probs = self.actor.sample_normal(state, reparameterize=False)
+        actions, log_probs = self.actor.sample_normal(state, reparameterize=True)
         #actions, log_probs = self.actor.sample_mvnormal(state, reparameterize=False)
         log_probs = log_probs.view(-1)
         q1_new_policy = self.critic_1.forward(state, actions)
@@ -140,6 +140,7 @@ class Agent():
         self.critic_1.optimizer.step()
         self.critic_2.optimizer.step()
 
+        self.update_network_parameters()
         # Update network parameters for the Target Value Network
         #self.value_collect = []
         #self.update_network_parameters()

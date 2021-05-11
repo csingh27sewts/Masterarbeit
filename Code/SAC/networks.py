@@ -58,7 +58,7 @@ class ActorNetwork(nn.Module):
         self.max_action = max_action
         self.checkpoint_dir = chkpt_dir
         self.checkpoint_file = os.path.join(self.checkpoint_dir, name+'_sac.ckpt')
-        self.reparam_noise = 1e-6
+        self.reparam_noise = 1e-6 #0.0005
 
         self.fc1 = nn.Linear(*self.input_dims, self.fc1_dims)
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
@@ -79,7 +79,7 @@ class ActorNetwork(nn.Module):
         mu = self.mu(prob)
         
         # Adding tanh to make mu in the range of [-1, 1]
-        mu = T.tanh(mu)
+        # mu = T.tanh(mu)
 
         sigma = self.sigma(prob)
 
@@ -112,6 +112,7 @@ class ActorNetwork(nn.Module):
         # rsample stores gradients, sample does not
         # print(T.tensor(self.max_action))
         
+
         # Why is this multiplied with max action which is [1,1,1,1,1,1,1,1,1,1,1,1]
         # multiplying the sampled action with all of the actions
         # tensor([1.3426, 1.3426, 1.3426, 1.3426, 1.3426, 1.3426, 1.3426, 1.3426, 1.3426,
@@ -122,27 +123,31 @@ class ActorNetwork(nn.Module):
         # I think this is defined for the case when the max_action is not equal to 1 
         # since for max_action = 1 it is not needed
         action = T.tensor(actions) * T.from_numpy(self.max_action).float().to(self.device)
+        action = action * 10
+        action = T.tanh(action)
         # print("ACTIONS")
         # print(mu,sigma)
         # print(probabilities)
         # print(action)
         # action = action * 100
+        # action = T.tanh(action) 
         # Take log_probs of action, i.e. log(p(a|pi_theta(s))
         log_probs = probabilities.log_prob(actions)
         print("LOG PROBS STEP 1")
         print(log_probs)
-
+        # Entropy is a measure of randomness of action
         # log_prob = log_prob(actions) - log(1 - action^2 + reparam_noise)
         # Where does this formula come from and what is its significance ?
-        # log_probs = T.log(1-action.pow(2) + self.reparam_noise)
-
+        log_probs -= T.log(1-action.pow(2) + self.reparam_noise)
+        # log_probs = alpha * log_probs - log_probs
+        # log_probs += T.sum(0.001 * 0.5 * mu**2 + sigma**2, dim = -1)
         print("LOG PROBS STEP 2")
         print(log_probs)
 
         log_probs = log_probs.sum(-1, keepdim=True)
 
-        print("LOG PROBS STEP 3")
-        print(log_probs)
+        # print("LOG PROBS STEP 3")
+        # print(log_probs)
 
         # log_probs = T.tensor([float(-1e9)]*len(actions))
         # log_probs = log_probs / int(1e8)
@@ -210,12 +215,12 @@ class ValueNetwork(nn.Module):
 
         v = self.v(state_value)
         # v = T.tensor([1., 1.])
-        print("STATE  !!!!!!!!!!!!!!!!!!!!")
-        print(state)
-        print("STATE VALUE !!!!!!!!!!!!!!!!!!!!")
-        print(state_value)
-        print("VALUE !!!!!!!!!!!!!!!!!!!!!!!!!!")
-        print(v)
+        #print("STATE  !!!!!!!!!!!!!!!!!!!!")
+        #print(state)
+        #print("STATE VALUE !!!!!!!!!!!!!!!!!!!!")
+        #print(state_value)
+        #print("VALUE !!!!!!!!!!!!!!!!!!!!!!!!!!")
+        #print(v)
         return v
 
     def save_checkpoint(self):

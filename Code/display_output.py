@@ -6,7 +6,7 @@ import tkinter
 import numpy as np
 
 # env_id = 'cloth_v0'
-env_id = 'cloth_sewts_exp2_2'
+env_id = 'cloth_corner'
 n_games = 1
 path_to_csv = os.getcwd() + '/output/' + env_id + "/log.csv"
 # path_to_csv = os.getcwd() + '/output/' + env_id + "/log.csv"

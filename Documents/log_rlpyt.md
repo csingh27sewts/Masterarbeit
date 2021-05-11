@@ -49,6 +49,7 @@ taskset: failed to set pid 27589's affinity: Invalid argument
 
 Calls script : rlpyt/experiments/scripts/dm_control/qpg/sac/train/dm_control_sac.py
 
+Environment files run from : /home/chandandeep/anaconda3/envs/rlpyt/lib/python3.7/site-packages/dm_control/suite
 
 ---------------------------------------------
 
@@ -367,4 +368,6 @@ Sequence of tasks to finish :
 * Transfer policy to Pybullet simulation Robot  
 * Make Mujoco cloth simulation more realistic (Change initial position generation me+thod)  
 * Transfer policy to real robot  
+
+/home/chandandeep/.mujoco/rlpyt/rlpyt/samplers/buffer.py
 

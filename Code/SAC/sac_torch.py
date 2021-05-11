@@ -22,7 +22,7 @@ class Agent():
         #self.critic_collect = []
         #self.target_value_collect = []
         #self.entropy_collect = []
-        print("Actions", n_actions)
+        # print("Actions", n_actions)
         # Initialize actor network
         self.actor = ActorNetwork(alpha, input_dims, layer1_size,
                                   layer2_size, n_actions=n_actions,
@@ -56,6 +56,7 @@ class Agent():
     def choose_action(self, observation):
         # Convert to Pytorch Tensor
         state = T.Tensor([observation]).to(self.actor.device)
+        # state = state * 100 # To account for vanishing gradients
         actions, _ = self.actor.sample_normal(state, reparameterize=False)
         #actions, _ = self.actor.sample_mvnormal(state)
         # actions is an array of arrays due to the added dimension in state
@@ -73,12 +74,15 @@ class Agent():
                 self.memory.sample_buffer(self.batch_size)
         reward = T.tensor(reward, dtype=T.float).to(self.critic_1.device)
         done = T.tensor(done).to(self.critic_1.device)
+        # print("DONE ! ")
+        # print(done)
         state_ = T.tensor(new_state, dtype=T.float).to(self.critic_1.device)
         state = T.tensor(state, dtype=T.float).to(self.critic_1.device)
         action = T.tensor(action, dtype=T.float).to(self.critic_1.device)
 
         # State is fed to the value network
         # Next state is fed to the target value network
+        # Changed value from self.value(state).view(-1)
         value = self.value(state).view(-1)
         value_ = self.target_value(state_).view(-1)
         value_[done] = 0.0
@@ -97,6 +101,7 @@ class Agent():
         # Loss for training the value network 
         self.value.optimizer.zero_grad()
         value_target = critic_value - log_probs
+        #value_target = critic_value
         value_loss = 0.5 * (F.mse_loss(value, value_target))
         value_loss.backward(retain_graph=True)
         self.value.optimizer.step()
@@ -126,11 +131,16 @@ class Agent():
         critic_1_loss = 0.5*F.mse_loss(q1_old_policy, q_hat)
         critic_2_loss = 0.5*F.mse_loss(q2_old_policy, q_hat)
 
+
+        # When you call loss.backward(), all it does is compute gradient of loss w.r.t all
+        # the parameters in loss that have requires_grad = True and store them in parameter.grad attribute for every parameter.
+        # optimizer.step() updates all the parameters based on parameter.grad
         critic_loss = critic_1_loss + critic_2_loss
         critic_loss.backward()
         self.critic_1.optimizer.step()
         self.critic_2.optimizer.step()
 
+        self.update_network_parameters()
         # Update network parameters for the Target Value Network
         #self.value_collect = []
         #self.update_network_parameters()
@@ -141,7 +151,7 @@ class Agent():
         #self.learn_step.append(self.lstep)
         #self.lstep += 1
         
-        return state, state_, action, actions, reward, value, value_target, critic_value, log_probs
+        return state, state_, action, actions, reward, value, value_target, critic_value, log_probs, value_loss, critic_loss, actor_loss
 
     def update_network_parameters(self, tau=None):
         

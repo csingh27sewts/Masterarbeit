@@ -22,8 +22,9 @@ import os
 import torch as T
 import pandas as pd
 import sys
-from simulation import simulation
+# from simulation import simulation
 np.set_printoptions(threshold=sys.maxsize)
+import gc
 
 if __name__ == '__main__':
    
@@ -41,7 +42,7 @@ if __name__ == '__main__':
 
     # Define main variables 
     # total steps = 500000 0> n_games = 50, n_steps = 10000
-    n_games = 5
+    n_games = 50
     # n_games = 50       
     score_max = []
     time_step_counter_max = []
@@ -62,8 +63,8 @@ if __name__ == '__main__':
     agent = Agent(alpha=0.0006, beta=0.0003, reward_scale=1, env_id=env_id, 
     # agent = Agent(alpha=0.0003, beta=0.0003, reward_scale=2, env_id=env_id, 
                 input_dims= observation_shape, tau=0.005,
-    #            env=env, batch_size=1024, layer1_size=256, layer2_size=256,
-                 env=env, batch_size=256,layer1_size=256, layer2_size=256,
+                env=env, batch_size=1024, layer1_size=256, layer2_size=256,
+    #           env=env, batch_size=1024,layer1_size=256, layer2_size=256,
                n_actions=action_shape)
 
     # create output folder for current experiment
@@ -120,10 +121,6 @@ if __name__ == '__main__':
                 "Action" : [],
                 "Sampled_Action" : []
                 }
-    log_file = path_to_environment + "/log.csv"
-    log_sac_file = path_to_environment + "/log_sac.csv"
-    log_sac_file_inputs = path_to_environment + "/log_sac_inputs.csv"
-    log_sac_loss_file = path_to_environment + "/log_sac_loss.csv"
     # Loop for a no. of games
     for i in range(n_games):
         
@@ -131,6 +128,8 @@ if __name__ == '__main__':
         time_step = env.reset()
 
         # Define variables
+        print(time_step)
+        # observation = time_step.observation
         observation = time_step.observation['position']
         reward_history = []
         average_value = []
@@ -140,7 +139,7 @@ if __name__ == '__main__':
         step = 0
         reward = 0
         done = False
-
+        print("GAME no.",i,"/n")
         for init_step in range(500):
             # env.step(np.array([0.,0.])) # for cloth_sewts_exp2_2
             env.step(np.array([0.,0.,0.])) # for cloth_corner
@@ -156,16 +155,24 @@ if __name__ == '__main__':
         # Display current game no.
         print("GAME NO.", i,"\n")
 
+        log_file = path_to_environment + "/log"+str(i)+".csv"
+        log_sac_file = path_to_environment + "/log_sac"+str(i)+".csv"
+        log_sac_file_inputs = path_to_environment + "/log_sac_inputs"+str(i)+".csv"
+        log_sac_loss_file = path_to_environment + "/log_sac_loss"+str(i)+".csv"
+
         while done is False : 
 
             # Move to game folder
+            # gc.collect()
             path_to_game = path_to_environment + '/' + game_no
             os.chdir(path_to_game)
             
             # Take action 
             
-            #action = np.array([0.1,0.1])
+            # action = np.array([0.1,0.1])
             action = agent.choose_action(observation)
+            # gc.collect()
+            # T.cpu().empty_cache()
             # print("ACTION \n")
             # print(action) # Print action, uncomment to display
             # action[1] = 0.
@@ -184,8 +191,8 @@ if __name__ == '__main__':
             # print(action_fed)
             
             # INFERENCE IN SIMULATION !
-            if load_checkpoint:
-                simulation(action_fed)
+            # if load_checkpoint:
+            #    simulation(action_fed)
             
             
             # print("TIME STEP\n")
@@ -199,6 +206,10 @@ if __name__ == '__main__':
 
             # Render image from environment for the time step and save
             # viewer.launch(env)
+
+            
+            
+
             image_data = env.physics.render(width = 64, height = 64 , camera_id = 0)
             #img = Image.open(image_data)
             # image_array = np.asarray(image_data)
@@ -207,22 +218,24 @@ if __name__ == '__main__':
             img_loc = path_to_game + "/frame-%.10d.png" % step
             img_name = "frame-%.10d.png" % step
             img.save(img_name)
+            
             # print(img_loc)
             # print(os.getcwd())
             # img.show(img)
             
+
             # Increment step
             step += 1
 
             # Define terminal state (Max no. of steps 100 or when we reach close to the maximum reward of 0)
-            if step == 5000 or reward > 9.0 and step > 500:
-            # if step == 10000 or reward > 9.0 and step > 10000:
+            # if step == 100 or reward > 0.9 and step > 20: # cloth_corner
+            if step == 5000 or reward > 0.9 and step > 1000:
             # if step == 10000 or reward > -0.005: # No. of steps should be > batch size of 250 as the agent learns only when the batch is full
                 done = True
 
             # Add current observation, action, reward and next observation to the Replay Buffer
             agent.remember(observation, action, reward, observation_, done)
-            
+            # gc.collect() 
             # Learn parameters of SAC Agent
             if not load_checkpoint:    
                 # agent.value.fc1.weight.data.fill_(0.1)
@@ -241,33 +254,38 @@ if __name__ == '__main__':
                 T.save(agent.critic_1.state_dict(),  os.path.join(path_to_environment,'checkpoint_tmp/init_critic.ckpt'))
                 T.save(agent.target_value.state_dict(), os.path.join(path_to_environment,'checkpoint_tmp/init_target_value.ckpt'))
                 agent.learn()
-            
+             
             # Update observation with next observation
-            # observation = observation_
-
+            observation = observation_
+            # gc.collect()
             # Add to the list of rewards for each time step 
             reward_history.append(reward)
             
             # Add a logger to capture states, rewards, actions coupled with the images captured to understand how the agent operates
+
             log_dict["Image"].append(img_loc)
             log_dict["Game_no"].append(i + 1)
             log_dict["Step_no"].append(step)
             log_dict["State"].append(observation)
             log_dict["Action"].append(action)
             log_dict["Reward"].append(reward)
+             
             if agent.learn() is not None:
-                log_sac_dict_inputs["State"].append(agent.learn()[0].detach().numpy())
-                log_sac_dict_inputs["Next_State"].append(agent.learn()[1].detach().numpy())
-                log_sac_dict_inputs["Action"].append(agent.learn()[2].detach().numpy())
-                log_sac_dict_inputs["Sampled_Action"].append(agent.learn()[3].detach().numpy())
-                log_sac_dict["Reward"].append(agent.learn()[4].detach().numpy())
-                log_sac_dict["Value"].append(agent.learn()[5].detach().numpy())
-                log_sac_dict["Target_Value"].append(agent.learn()[6].detach().numpy())
-                log_sac_dict["Critic"].append(agent.learn()[7].detach().numpy())
-                log_sac_dict["Entropy"].append(agent.learn()[8].detach().numpy())
-                log_sac_loss_dict["Value_loss"].append(agent.learn()[9].detach().numpy())
-                log_sac_loss_dict["Critic_loss"].append(agent.learn()[10].detach().numpy())
-                log_sac_loss_dict["Actor_loss"].append(agent.learn()[11].detach().numpy())
+                # print("PRINTING :: : :: : :: : :: : :")
+                # print(agent.learn()[0].detach().cpu().numpy())
+                log_sac_dict_inputs["State"].append(agent.learn()[0].detach().cpu().numpy())
+                log_sac_dict_inputs["Next_State"].append(agent.learn()[1].detach().cpu().numpy())
+                log_sac_dict_inputs["Action"].append(agent.learn()[2].detach().cpu().numpy())
+                log_sac_dict_inputs["Sampled_Action"].append(agent.learn()[3].detach().cpu().numpy())
+                log_sac_dict["Reward"].append(agent.learn()[4].detach().cpu().numpy())
+                log_sac_dict["Value"].append(agent.learn()[5].detach().cpu().numpy())
+                log_sac_dict["Target_Value"].append(agent.learn()[6].detach().cpu().numpy())
+                log_sac_dict["Critic"].append(agent.learn()[7].detach().cpu().numpy())
+                log_sac_dict["Entropy"].append(agent.learn()[8].detach().cpu().numpy())
+                log_sac_loss_dict["Value_loss"].append(agent.learn()[9].detach().cpu().numpy())
+                log_sac_loss_dict["Critic_loss"].append(agent.learn()[10].detach().cpu().numpy())
+                log_sac_loss_dict["Actor_loss"].append(agent.learn()[11].detach().cpu().numpy())
+        
             else:
                 log_sac_dict_inputs["State"].append(None)
                 log_sac_dict_inputs["Next_State"].append(None)
@@ -281,6 +299,7 @@ if __name__ == '__main__':
                 log_sac_loss_dict["Value_loss"].append(None)
                 log_sac_loss_dict["Critic_loss"].append(None)
                 log_sac_loss_dict["Actor_loss"].append(None)
+            # gc.collect() 
         # Save agent models
             if not load_checkpoint:
                 agent.save_models()
@@ -314,6 +333,8 @@ if __name__ == '__main__':
 
         subprocess.call([ 'mkdir', '-p', 'Plots' ])
         os.chdir('Plots')
+        
+        # gc.collect()
 
         x = [i for i in range(step)]
         plot_learning_curve(x, reward_history, figure_file)
@@ -368,7 +389,9 @@ if __name__ == '__main__':
                     step_size.append(j)
                 # print(log_sac_dict["Reward"][i].dtype) 
                 plot_learning_curve(step_size, log_sac_dict["Reward"][i], figure_file_reward)  
-        
+       
+        # gc.collect()
+
         step_size = []
         #if(log_sac_loss_dict["Value_loss"]) is not None:
         length = len(log_sac_loss_dict["Value_loss"])
@@ -384,7 +407,7 @@ if __name__ == '__main__':
                 if(isinstance(log_sac_loss_dict["Critic_loss"][j], np.ndarray)):
                     log_sac_loss_dict["Critic_loss"][j] = log_sac_loss_dict["Critic_loss"][j].item()
             else:
-                log_sac_loss_dict["Critic_loss"][j] = 0
+                 log_sac_loss_dict["Critic_loss"][j] = 0
             if(log_sac_loss_dict["Actor_loss"][j]):
                 if(isinstance(log_sac_loss_dict["Actor_loss"][j], np.ndarray)):
                     log_sac_loss_dict["Actor_loss"][j] = log_sac_loss_dict["Actor_loss"][j].item()
@@ -447,14 +470,23 @@ if __name__ == '__main__':
         plot_learning_curve(steps_avg, average_value, figure_file_average_value)  
         plot_learning_curve(steps_avg, average_reward, figure_file_average_reward)  
    
-    # Uncomment when you want to save all important values in a CSV
-    # In case you want to save the log_dict in a separate log.txt file
-    df = pd.DataFrame(log_dict).to_csv(log_file, header = True, index = False)
-    # print(log_sac_dict.keys())
-    df = pd.DataFrame(log_sac_dict).to_csv(log_sac_file, header = True, index = False)
-    df = pd.DataFrame(log_sac_dict_inputs).to_csv(log_sac_file_inputs, header = True, index = False)
-    df = pd.DataFrame(log_sac_loss_dict).to_csv(log_sac_loss_file, header = True, index = False)
-
+        # Uncomment when you want to save all important values in a CSV
+        # In case you want to save the log_dict in a separate log.txt file
+        print("Saving CSVs ... /n")
+        df = pd.DataFrame(log_dict).to_csv(log_file, header = True, index = False)
+        # print(log_sac_dict.keys())
+        # df = pd.DataFrame(log_sac_dict).to_csv(log_sac_file, header = True, index = False)
+        # df = pd.DataFrame(log_sac_dict_inputs).to_csv(log_sac_file_inputs, header = True, index = False)
+        df = pd.DataFrame(log_sac_loss_dict).to_csv(log_sac_loss_file, header = True, index = False)
+            
+        log_dict = {key: [] for key in log_dict}
+        log_sac_loss_dict = {key: [] for key in log_sac_loss_dict}
+        log_sac_dict = {key: [] for key in log_sac_dict}
+        log_sac_dict_inputs = {key: [] for key in log_sac_dict_inputs}
+        print("Saved CSVs ... /n")     
+        #log_sac_loss_dict.clear()
+        #log_sac_dict.clear()
+        #log_sac_dict_inputs.clear()
 
     # print("Reward")
     # print(len(log_sac_dict["Reward"][260]))

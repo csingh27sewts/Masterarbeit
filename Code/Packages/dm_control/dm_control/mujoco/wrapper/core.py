@@ -66,7 +66,7 @@ if constants.mjVERSION_HEADER != mjlib.mj_version():
   raise Error("MuJoCo library version ({0}) does not match header version "
               "({1})".format(constants.mjVERSION_HEADER, mjlib.mj_version()))
 
-_REGISTERED = False
+_REGISTERED = True
 _ERROR_BUFSIZE = 1000
 
 # This is used to keep track of the `MJMODEL` pointer that was most recently

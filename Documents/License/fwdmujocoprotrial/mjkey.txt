@@ -1,0 +1,20 @@
+MuJoCo Pro Trial license activation key, number 157517, type 6.
+
+Issued to Mudit Sharma <mudit.sharma@rwth-aachen.de>.
+
+Expires June 10, 2021.
+
+This file activates MuJoCo Pro on a single computer with id:
+LINUX_u740ge9V6Sa6MBn2s0PRGAVS121NE5m40_1NM181
+
+Do not modify this file. Its entire content, including the
+plain text section, is used by the activation manager.
+
+78662f7ce5b2704861a9d4ca7fc98ada49796930bc7eb7fb467f2c8a5aec500c
+28d7a5051e0d6ac6c34a8a68a453803cc6789e33db645800cd3b35b1cd026d04
+7c0720605dfa3bba7ab278728191aaafb68c3bf23696dad0674a318439366169
+99187ffd97e04400733cbc7110f49405bc6a8f6606dfcb4c4900e519442e525a
+6ed8f7f9e55d8eb7d64f244f3149726b8267f391c3665ea04e1f72897635f108
+84fc82f1816b5f4ad9adc5e7bc6e20587ace4761ec3515bea20f94ed3b9ba104
+8d33bb8342fac8eda8deb71d114c4d3aa608b4234b4227868724058d7b01a6d0
+3b0e53faad3e5f28c6236cc60a83ab303775d57596da4e5cdbb59bd2152b290a

@@ -27,7 +27,7 @@ class CriticNetwork(nn.Module):
 
         self.optimizer = optim.Adam(self.parameters(), lr=beta)
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
-
+        # self.device = T.device('cpu')
         self.to(self.device)
 
     def forward(self, state, action):
@@ -67,7 +67,7 @@ class ActorNetwork(nn.Module):
 
         self.optimizer = optim.Adam(self.parameters(), lr=alpha)
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
-
+        # self.device = T.device('cpu')
         self.to(self.device)
 
     def forward(self, state):
@@ -95,6 +95,11 @@ class ActorNetwork(nn.Module):
         # mu and sigma each have size equal to no. of actions, in cloth_v0 it is 12
         # state = state * 100
         mu, sigma = self.forward(state)
+        #print("MU")
+        #print(mu)
+        #print(sigma)
+        # mu = T.tensor([0.,0.,0.])
+        # sigma = T.tensor([0.006, 0.006, 0.006])
         probabilities = T.distributions.Normal(mu, sigma)
         # print("PROBABILITIES\n")
         # print(probabilities)
@@ -204,7 +209,7 @@ class ValueNetwork(nn.Module):
 
         self.optimizer = optim.Adam(self.parameters(), lr=beta)
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
-
+        # self.device = T.device('cpu')
         self.to(self.device)
 
     def forward(self, state):

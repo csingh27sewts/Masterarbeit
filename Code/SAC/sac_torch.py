@@ -58,9 +58,10 @@ class Agent():
         state = T.Tensor([observation]).to(self.actor.device)
         # state = state * 100 # To account for vanishing gradients
         actions, _ = self.actor.sample_normal(state, reparameterize=False)
-        #actions, _ = self.actor.sample_mvnormal(state)
+        # actions, _ = self.actor.sample_mvnormal(state)
         # actions is an array of arrays due to the added dimension in state
         return actions.cpu().detach().numpy()[0]
+        # return actions.numpy()[0]
 
     def remember(self, state, action, reward, new_state, done):
         self.memory.store_transition(state, action, reward, new_state, done)
@@ -116,7 +117,8 @@ class Agent():
         critic_value = critic_value.view(-1)
 
         # Loss for training the actor network
-        actor_loss = log_probs - critic_value
+        actor_loss = critic_value - log_probs # changed because of critic value becoming largely negative and loss increasing overall rather than decreasing
+        # actor_loss = log_probs - critic_value
         actor_loss = T.mean(actor_loss)
         self.actor.optimizer.zero_grad()
         actor_loss.backward(retain_graph=True)

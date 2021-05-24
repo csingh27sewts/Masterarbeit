@@ -33,7 +33,7 @@ if __name__ == '__main__':
     
     # LOAD TASK
     print(inspect.getfile(dm_control))
-    env = suite.load(domain_name="cloth_sewts_exp2_2", task_name="easy") 
+    env = suite.load(domain_name="cloth_corner", task_name="easy") 
     # env = suite.load(domain_name="cloth_sewts_exp2", task_name="easy") 
 
     # DEFINE ACTION SPEC 
@@ -64,7 +64,7 @@ if __name__ == '__main__':
                            high=action_spec.maximum,
                            size=action_spec.shape)
         print("ACTION")
-        action[2] = 0.
+        # action[2] = 0.
 
         # ACTION FOR 4 PARTICLES (1 CORNER + ITS NEIGHBOURS)
         # action = np.random.uniform(low=action_spec.minimum,

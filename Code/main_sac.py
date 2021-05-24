@@ -6,8 +6,8 @@
 import pybullet_envs
 import gym
 import numpy as np
-from sac_torch import Agent
-from utils import plot_learning_curve
+from SAC.sac_torch import Agent
+from SAC.utils import plot_learning_curve
 import numpy as np
 import os
 import torch as T

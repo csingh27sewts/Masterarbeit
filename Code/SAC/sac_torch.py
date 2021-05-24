@@ -2,8 +2,11 @@ import os
 import torch as T
 import torch.nn.functional as F
 import numpy as np
-from SAC.buffer import ReplayBuffer
-from SAC.networks import ActorNetwork, CriticNetwork, ValueNetwork
+from SAC.buffer import ReplayBuffer # for cloth
+from SAC.networks import ActorNetwork, CriticNetwork, ValueNetwork # for cloth 
+# from buffer import ReplayBuffer # for cart pole
+# from networks import ActorNetwork, CriticNetwork, ValueNetwork # for cart pole
+
 
 class Agent():
     def __init__(self, alpha, beta, input_dims, tau, env,
@@ -27,8 +30,8 @@ class Agent():
         self.actor = ActorNetwork(alpha, input_dims, layer1_size,
                                   layer2_size, n_actions=n_actions,
                                   name=env_id+'_actor', 
-        #                          max_action=env.action_space.high)
-                                  max_action=env.action_spec().maximum)
+        #                          max_action=env.action_space.high) # for cart pole
+                                  max_action=env.action_spec().maximum) # for cloth
         
         # Initialize critic network 1
         self.critic_1 = CriticNetwork(beta, input_dims, layer1_size,
@@ -60,7 +63,7 @@ class Agent():
         actions, _ = self.actor.sample_normal(state, reparameterize=False)
         # actions, _ = self.actor.sample_mvnormal(state)
         # actions is an array of arrays due to the added dimension in state
-        return actions.cpu().detach().numpy()[0]
+        return actions.cpu().detach().numpy()
         # return actions.numpy()[0]
 
     def remember(self, state, action, reward, new_state, done):
@@ -117,8 +120,8 @@ class Agent():
         critic_value = critic_value.view(-1)
 
         # Loss for training the actor network
-        actor_loss = critic_value - log_probs # changed because of critic value becoming largely negative and loss increasing overall rather than decreasing
-        # actor_loss = log_probs - critic_value
+        # actor_loss = critic_value - log_probs # changed because of critic value becoming largely negative and loss increasing overall rather than decreasing
+        actor_loss = log_probs - critic_value
         actor_loss = T.mean(actor_loss)
         self.actor.optimizer.zero_grad()
         actor_loss.backward(retain_graph=True)

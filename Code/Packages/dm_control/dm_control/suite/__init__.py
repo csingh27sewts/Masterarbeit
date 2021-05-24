@@ -60,7 +60,7 @@ from dm_control.suite import rope_v2
 from dm_control.suite import rope_sac
 # from dm_control.suite import cloth_sewts_exp1
 # from dm_control.suite import cloth_sewts_exp2
-# from dm_control.suite import cloth_sewts_exp2_2
+from dm_control.suite import cloth_sewts_exp2_2
 
 
 # Find all domains imported.

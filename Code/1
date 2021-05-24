@@ -1,9 +1,3 @@
-# The following 3 lines are helpful if you have multiple GPUs and want to train
-# agents on multiple GPUs
-#import os
-#os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
-#os.environ['CUDA_VISIBLE_DEVICES'] = '1'
-
 # Import packages
 import Packages.dm_control
 from Packages.dm_control.dm_control import suite
@@ -22,50 +16,39 @@ import os
 import torch as T
 import pandas as pd
 import sys
-# from simulation import simulation
 np.set_printoptions(threshold=sys.maxsize)
 import gc
+import gym
+
+from stable_baselines3 import SAC
+
 
 if __name__ == '__main__':
    
-    # Check Torch version
-    print(T.__version__)
-
-    # Get location of DM Control Suite
-    # print(inspect.getfile(dm_control.suite)) # built in path
-    # /home/chandandeep/anaconda3/envs/rlpyt/lib/python3.8/site-packages/dm_control/suite/
-    # Choose environment
-    # env_id = 'cloth_v0'
-    # env_id = 'cloth_sewts_exp2_2'
+    # Define environment
     env_id = 'cloth_corner'
-    
-
-    # Define main variables 
-    # total steps = 500000 0> n_games = 50, n_steps = 10000
     n_games = 50
-    # n_games = 50       
     score_max = []
     time_step_counter_max = []
 
     # Load environment
     env = suite.load(domain_name=env_id, task_name="easy")
-    
+    env = gym.make('dm2gym:CheetahRun-v0')
     # Define action space and action shape
-    action_space = env.action_spec()
-    action_shape = action_space.shape[0]
+    # action_space = env.action_spec()
+    # action_shape = action_space.shape[0]
 
+    # env.action_space = action_space
     # Define observation space and observation shape
-    observation_space = env.observation_spec()
-    observation_shape = observation_space['position'].shape
+    # observation_space = env.observation_spec()
+    # observation_shape = observation_space['position'].shape
+    print(action_space)
     print(observation_shape)
-    
-    # Initialize SAC Agent 
-    agent = Agent(alpha=0.0006, beta=0.0003, reward_scale=1, env_id=env_id, 
-    # agent = Agent(alpha=0.0003, beta=0.0003, reward_scale=2, env_id=env_id, 
-                input_dims= observation_shape, tau=0.005,
-                env=env, batch_size=256, layer1_size=256, layer2_size=256,
-    #           env=env, batch_size=1024,layer1_size=256, layer2_size=256,
-               n_actions=action_shape)
+
+    env.observation_space = observation_space
+    env.reward_range = (0,1)
+    metadata = {'render.modes': []}
+    env.metadata = metadata
 
     # create output folder for current experiment
     path_to_output = os.getcwd() + '/output'
@@ -100,10 +83,6 @@ if __name__ == '__main__':
                 "Reward" : [],
                 }
     log_sac_dict = {
-#                "State" : [],
-#                "Next_State" : [],
-#                "Action" : [],
-#                "Sampled_Action" : [],
                 "Reward" : [],
                 "Value" : [],
                 "Critic" : [],
@@ -129,11 +108,8 @@ if __name__ == '__main__':
         
         # Reset environment
         time_step = env.reset()
-
-        # Define variables
-        # print(time_step)
-        # observation = time_step.observation
         observation = time_step.observation['position']
+        observation['shape'] = observation_shape
         reward_history = []
         average_value = []
         average_critic = []
@@ -148,7 +124,6 @@ if __name__ == '__main__':
             # env.step(np.array([0.,0.])) # for cloth_sewts_exp2_2
             env.step(np.array([0.,0.,0.])) # for cloth_corner
             # env.step(np.array([0.]*7)) # for cloth_corner random_location = False
-   
         
         # Change directory to current environment path
         os.chdir(path_to_environment)
@@ -164,7 +139,9 @@ if __name__ == '__main__':
         log_sac_file = path_to_environment + "/log_sac"+str(i)+".csv"
         log_sac_file_inputs = path_to_environment + "/log_sac_inputs"+str(i)+".csv"
         log_sac_loss_file = path_to_environment + "/log_sac_loss"+str(i)+".csv"
-
+        model = SAC("MlpPolicy", env, verbose=1)
+        print("MODEL")
+        print(model)
         while done is False : 
 
             # Move to game folder
@@ -173,19 +150,12 @@ if __name__ == '__main__':
             os.chdir(path_to_game)
             
             # Take action 
-            
+                    
             # action = np.array([0.1,0.1])
-            observation = observation / observation.max()
-            action = agent.choose_action(observation)
-            # gc.collect()
-            # T.cpu().empty_cache()
-            # print("ACTION \n")
-            # print(action) # Print action, uncomment to display
-            # action[1] = 0.
-            # Do not artificially change one action component. The agent gives the action [x,y,z] which would move it closer to goal
-            # Changing one component is essentially not using what the policy predicts. Change in the main file if you need to.
+            # observation = observation / observation.max()
+            action, observation_ = model.predict(observation, deterministic=True)
             print("STEP",i,"/n")
-            # action = np.array([0.2,0.2,0])
+        
             print(action,"/n")
             # print(observation,"/n")
             action_fed = np.array([action[0][0], action[0][1], action[0][2]]) #cloth_corner
@@ -196,10 +166,8 @@ if __name__ == '__main__':
             print(action_fed)
             # action[2] = 0. # Uncomment for cloth_sewts_v1 / v2 env
             time_step = env.step(action_fed)
-            # Inference in simulation
-            # print("ACTION FED")
-            # print(action_fed)
-            
+            obs, reward, done, info = env.step(action)
+
             # INFERENCE IN SIMULATION !
             # if load_checkpoint:
             #    simulation(action_fed)
@@ -217,7 +185,12 @@ if __name__ == '__main__':
             # print(reward) # Print reward
 
             # Render image from environment for the time step and save
-            # viewer.launch(env)
+            viewer.launch(env)
+
+
+            model.learn(total_timesteps=10000)
+
+
 
             image_data = env.physics.render(width = 64, height = 64 , camera_id = 0)
             #img = Image.open(image_data)

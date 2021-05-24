@@ -7,8 +7,10 @@ import numpy as np
 
 # env_id = 'cloth_v0'
 env_id = 'cloth_corner'
+# env_id = 'cloth_minimal_main_2'
+# env_id = 'cloth_corner_eval'
 n_games = 1
-path_to_csv = os.getcwd() + '/output/' + env_id + "/log0.csv"
+path_to_csv = os.getcwd() + '/output/cloth_minimal_main_2/' + env_id + "/log_minimal.csv"
 # path_to_csv = os.getcwd() + '/output/' + env_id + "/log.csv"
 # path_to_csv = '/home/chandandeep/Masterarbeit_ws/src/Masterarbeit_output/output/cloth_sewts_exp2_attempt#2/log.csv'
 df = pd.read_csv(path_to_csv)

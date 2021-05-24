@@ -71,13 +71,20 @@ class ActorNetwork(nn.Module):
         self.to(self.device)
 
     def forward(self, state):
+        # print("FORWARD .............")
+        # print(state)
         prob = self.fc1(state)
+        # print(prob)
         prob = F.relu(prob)
+        # print(prob)
         prob = self.fc2(prob)
+        # print(prob)
         prob = F.relu(prob)
+        # print(prob)
 
         mu = self.mu(prob)
-        
+        # print("MUUUUUU")
+        print(mu)
         # Adding tanh to make mu in the range of [-1, 1]
         # mu = T.tanh(mu)
 
@@ -93,11 +100,11 @@ class ActorNetwork(nn.Module):
 
         # Feed the state to the model adn get mu and sigma
         # mu and sigma each have size equal to no. of actions, in cloth_v0 it is 12
-        # state = state * 100
+        # state = state * 1000
         mu, sigma = self.forward(state)
-        #print("MU")
-        #print(mu)
-        #print(sigma)
+        # print("MU")
+        # print(mu)
+        # print(sigma)
         # mu = T.tensor([0.,0.,0.])
         # sigma = T.tensor([0.006, 0.006, 0.006])
         probabilities = T.distributions.Normal(mu, sigma)
@@ -128,26 +135,28 @@ class ActorNetwork(nn.Module):
         # I think this is defined for the case when the max_action is not equal to 1 
         # since for max_action = 1 it is not needed
         action = T.tensor(actions) * T.from_numpy(self.max_action).float().to(self.device)
-        action = action * 10
+        action = action # for cloth environment only
         action = T.tanh(action)
         # print("ACTIONS")
         # print(mu,sigma)
         # print(probabilities)
         # print(action)
-        # action = action * 100
-        # action = T.tanh(action) 
+        
+        action = action * 20 # dividing by 0.05 so that 1 correspondes to 0.05 movement
+        
+        action = T.tanh(action) 
         # Take log_probs of action, i.e. log(p(a|pi_theta(s))
         log_probs = probabilities.log_prob(actions)
-        print("LOG PROBS STEP 1")
-        print(log_probs)
+        # print("LOG PROBS STEP 1")
+        # print(log_probs)
         # Entropy is a measure of randomness of action
         # log_prob = log_prob(actions) - log(1 - action^2 + reparam_noise)
         # Where does this formula come from and what is its significance ?
         log_probs -= T.log(1-action.pow(2) + self.reparam_noise)
         # log_probs = alpha * log_probs - log_probs
         # log_probs += T.sum(0.001 * 0.5 * mu**2 + sigma**2, dim = -1)
-        print("LOG PROBS STEP 2")
-        print(log_probs)
+        # print("LOG PROBS STEP 2")
+        # print(log_probs)
 
         log_probs = log_probs.sum(-1, keepdim=True)
 
@@ -163,7 +172,7 @@ class ActorNetwork(nn.Module):
         """
             Doesn't quite seem to work.  The agent never learns.
         """
-        # state = state * 100
+        # state = state * 1000
         mu, sigma = self.forward(state)
         n_batches = sigma.size()[0]
 

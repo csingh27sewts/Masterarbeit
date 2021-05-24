@@ -38,8 +38,8 @@ if __name__ == '__main__':
     # /home/chandandeep/anaconda3/envs/rlpyt/lib/python3.7/site-packages/dm_control/suite/
     # Choose environment
     # env_id = 'cloth_v0'
-    env_id = 'cloth_sewts_exp2_2'
-    # env_id = 'cloth_v0'
+    # env_id = 'cloth_sewts_exp2_2'
+    env_id = 'cloth_corner'
     
 
     # Define main variables 
@@ -190,9 +190,11 @@ if __name__ == '__main__':
         # action[2] = 0.
 
         # POLICY TYPE 2 - Random actions in the range [-1,1] in (x,y,z) direction 
-        action = np.random.uniform(low=action_min,
-        high=action_max,
-        size=action_shape)
+        # action = np.random.uniform(low=action_min,
+        # high=action_max,
+        # size=action_shape)
+
+        action = np.array([0.,0.,0.])
 
         # POLICY TYPE 1 - Pulling in x direction by fixed amount
         #action = np.random.uniform([-1.,0.,0.])
@@ -214,7 +216,7 @@ if __name__ == '__main__':
         observation = time_step.observation['position']
         reward_history = []
         step = 0
-        reward = -0.45
+        # reward = -0.45
         done = False
         
         # Setting time
@@ -263,17 +265,17 @@ if __name__ == '__main__':
             # Get next observation and reward
             observation_ = time_step.observation['position']
             reward = time_step.reward
-
+            print(reward)
             # Store transitions with good rewards
-            if step < 100 and reward > -0.15:
-                ReplayBuffer.store_transition(memory, observation, action, reward, observation_, done)
+            #if step < 100 and reward > -0.15:
+            #    ReplayBuffer.store_transition(memory, observation, action, reward, observation_, done)
             
             # print(observation_) # Print oberservation
             # print(reward) # Print reward
 
             # Render image from environment for the time step and save
             # viewer.launch(env)
-            image_data = env.physics.render(width = 640, height = 480, camera_id = 1)
+            image_data = env.physics.render(width = 640, height = 480, camera_id = 0)
             #img = Image.open(image_data)
             # image_array = np.asarray(image_data)
             img = Image.fromarray(image_data, 'RGB')

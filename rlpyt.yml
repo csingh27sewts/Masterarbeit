@@ -1,118 +1,138 @@
 name: rlpyt
 channels:
   - pytorch
+  - anaconda
   - defaults
 dependencies:
-  - pip
-  - _libgcc_mutex=0.1=main
-  - _openmp_mutex=4.5=1_gnu
+  - absl-py=0.10.0=py38_0
   - blas=1.0=mkl
   - bzip2=1.0.8=h7b6447c_0
-  - ca-certificates=2021.4.13=h06a4308_1
-  - cairo=1.16.0=hf32fb01_1
-  - certifi=2020.12.5=py37h06a4308_0
-  - cffi=1.14.5=py37h261ae71_0
-  - cudatoolkit=9.2=0
-  - ffmpeg=4.0=hcdf2ecd_0
-  - fontconfig=2.13.1=h6c09931_0
-  - freeglut=3.0.0=hf484d3e_5
+  - ca-certificates=2021.5.25=h06a4308_1
+  - certifi=2020.12.5=py38h06a4308_0
+  - cudatoolkit=10.2.89=hfd86e86_1
+  - ffmpeg=4.3=hf484d3e_0
   - freetype=2.10.4=h5ab3b9f_0
-  - glib=2.68.1=h36276a3_0
-  - graphite2=1.3.14=h23475e2_0
-  - harfbuzz=1.8.8=hffaf4a1_0
-  - hdf5=1.10.2=hba1933b_1
-  - icu=58.2=he6710b0_3
+  - gmp=6.2.1=h2531618_2
+  - gnutls=3.6.15=he1e5248_0
   - intel-openmp=2021.2.0=h06a4308_610
-  - jasper=2.0.14=h07fcdf6_1
   - jpeg=9b=h024ee3a_2
+  - lame=3.100=h7b6447c_0
+  - lcms2=2.12=h3be6417_0
+  - ld_impl_linux-64=2.33.1=h53a641e_7
+  - libedit=3.1.20191231=h14c3975_1
   - libffi=3.3=he6710b0_2
-  - libgfortran-ng=7.3.0=hdf63c60_0
-  - libglu=9.0.0=hf484d3e_1
-  - libopencv=3.4.2=hb342d67_1
-  - libopus=1.3.1=h7b6447c_0
+  - libgcc-ng=9.1.0=hdf63c60_0
+  - libiconv=1.15=h63c8f33_5
+  - libidn2=2.3.0=h27cfd23_0
   - libpng=1.6.37=hbc83047_0
+  - libstdcxx-ng=9.1.0=hdf63c60_0
+  - libtasn1=4.16.0=h27cfd23_0
   - libtiff=4.1.0=h2733197_1
-  - libuuid=1.0.3=h1bed415_2
-  - libvpx=1.7.0=h439df22_0
-  - libxcb=1.14=h7b6447c_0
-  - libxml2=2.9.10=hb55368b_3
+  - libunistring=0.9.10=h27cfd23_0
+  - libuv=1.40.0=h7b6447c_0
   - lz4-c=1.9.3=h2531618_0
-  - mkl=2020.2=256
-  - mkl-service=2.3.0=py37he8ac12f_0
-  - mkl_fft=1.3.0=py37h54f3939_0
-  - mkl_random=1.1.1=py37h0573a6f_0
+  - mkl=2021.2.0=h06a4308_296
+  - mkl-service=2.3.0=py38h27cfd23_1
+  - mkl_fft=1.3.0=py38h42c9631_2
+  - mkl_random=1.2.1=py38ha9443f7_2
   - ncurses=6.2=he6710b0_1
+  - nettle=3.7.2=hbbd107a_1
   - ninja=1.10.2=hff7bd54_1
-  - numpy=1.19.2=py37h54aff64_0
-  - numpy-base=1.19.2=py37hfa32c7d_0
-  - opencv=3.4.2=py37h6fd60c2_1
+  - numpy-base=1.20.1=py38h7d8b39e_0
+  - olefile=0.46=py_0
+  - openh264=2.1.0=hd408876_0
   - openssl=1.1.1k=h27cfd23_0
-  - pcre=8.44=he6710b0_0
-  - pixman=0.40.0=h7b6447c_0
-  - psutil=5.8.0=py37h27cfd23_1
-  - py-opencv=3.4.2=py37hb342d67_1
-  - pycparser=2.20=py_2
-  - python=3.7.9=h7579374_0
-  - pytorch=1.2.0=py3.7_cuda9.2.148_cudnn7.6.2_0
-  - readline=8.1=h27cfd23_0
-  - setuptools=52.0.0=py37h06a4308_0
-  - six=1.15.0=py37h06a4308_0
-  - sqlite=3.35.4=hdfb4753_0
+  - python=3.8.5=h7579374_1
+  - pytorch=1.8.0=py3.8_cuda10.2_cudnn7.6.5_0
+  - readline=8.0=h7b6447c_0
+  - six=1.15.0=py_0
+  - sqlite=3.33.0=h62c20be_0
   - tk=8.6.10=hbc83047_0
-  - wheel=0.36.2=pyhd3eb1b0_0
+  - torchaudio=0.8.0=py38
+  - torchvision=0.9.0=py38_cu102
+  - typing_extensions=3.7.4.3=pyha847dfd_0
+  - wheel=0.35.1=py_0
   - xz=5.2.5=h7b6447c_0
   - zlib=1.2.11=h7b6447c_3
   - zstd=1.4.9=haebb681_0
   - pip:
-    - absl-py==0.11.0
-    - alphashape==1.1.0
+    - abr-control==0.1.0
+    - alphashape==1.3.1
     - astunparse==1.6.3
-    - atari-py==0.2.6
-    - attrdict==2.0.1
-    - cached-property==1.5.2
+    - attrs==21.2.0
+    - cffi==1.14.5
     - chardet==4.0.0
-    - click==7.1.2
+    - click==8.0.0
     - click-log==0.3.2
+    - cloudpickle==1.6.0
     - cycler==0.10.0
-    - cython==0.29.21
-    - dm-control==0.0.322773188
-    - dm-env==1.3
-    - dm-tree==0.1.5
+    - cython==0.29.23
+    - decorator==4.4.2
+    - dm-control==0.0.0
+    - dm-env==1.4
+    - dm-tree==0.1.6
+    - dmc2gym==1.0.0
     - fasteners==0.16
+    - flatbuffers==1.12
     - future==0.18.2
+    - gast==0.4.0
+    - gcc7==0.0.7
     - glfw==2.1.0
+    - google-pasta==0.2.0
+    - grpcio==1.34.1
+    - gym==0.18.0
+    - gym-dmcontrol==0.0.3
     - h5py==3.1.0
     - idna==2.10
     - imageio==2.9.0
+    - iniconfig==1.1.1
+    - keras-nightly==2.5.0.dev2021032900
+    - keras-preprocessing==1.1.2
     - kiwisolver==1.3.1
-    - labmaze==1.0.3
-    - lxml==4.6.2
-    - matplotlib==3.3.4
+    - labmaze==1.0.4
+    - lxml==4.6.3
+    - matplotlib==3.4.2
+    - memory-profiler==0.58.0
     - mpmath==1.2.1
     - mujoco-py==2.0.2.8
-    - opencv-contrib-python==4.5.1.48
-    - pandas==1.2.3
-    - pillow==8.1.0
-    - pip==21.1.1
-    - protobuf==3.14.0
-    - pydmps==0.2
-    - pyflowchart==0.1.3
+    - mushroom-rl==1.6.1
+    - networkx==2.5.1
+    - numpy==1.20.3
+    - numpy-ml==0.1.2
+    - oauthlib==3.1.0
+    - opt-einsum==3.3.0
+    - packaging==20.9
+    - pandas==1.2.4
+    - pillow==7.2.0
+    - pip==21.1.2
+    - pluggy==0.13.1
+    - protobuf==3.16.0
+    - psutil==5.8.0
+    - py==1.10.0
+    - pybullet==3.1.7
+    - pycocotools==2.0.0
+    - pycparser==2.20
+    - pygame==2.0.1
+    - pyglet==1.5.0
     - pyopengl==3.1.5
     - pyparsing==2.4.7
-    - pyprind==2.11.2
-    - pysimplegui==4.38.0
+    - pysimplegui==4.41.2
+    - pytest==6.2.4
     - python-dateutil==2.8.1
     - pytz==2021.1
     - requests==2.25.1
-    - scipy==1.6.0
+    - rtree==0.9.7
+    - scikit-learn==0.24.2
+    - scipy==1.6.3
+    - setuptools==57.0.0
     - shapely==1.7.1
     - sympy==1.8
-    - tqdm==4.56.2
-    - urllib3==1.26.3
-    - libgcc-ng=9.3.0=h9cbead1_17
-    - libgomp=9.3.0=h9cbead1_17
-    - ld_impl_linux-64=2.35.1=hcecfb41_1
-    - libstdcxx-ng=9.3.0=h2ae2ef3_17
-
+    - tensorflow-estimator==2.5.0
+    - termcolor==1.1.0
+    - threadpoolctl==2.1.0
+    - toml==0.10.2
+    - tqdm==4.60.0
+    - trimesh==3.9.18
+    - urllib3==1.26.4
+    - wrapt==1.12.1
 prefix: /home/chandandeep/anaconda3/envs/rlpyt
-

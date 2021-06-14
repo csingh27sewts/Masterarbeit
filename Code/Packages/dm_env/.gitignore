@@ -1,7 +1,0 @@
-# Ignore byte-compiled Python code
-*.py[cod]
-
-# Ignore directories created during the build/installation process
-*.egg-info/
-build/
-dist/

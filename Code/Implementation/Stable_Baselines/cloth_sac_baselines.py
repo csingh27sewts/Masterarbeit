@@ -24,15 +24,15 @@ if __name__ == '__main__':
 
     # EXPERIMENT #0
     # env_id = 'pendulum'
-    # env = gym.make('Pendulum-v0')   
+    env = gym.make('Pendulum-v0')   
     
     # EXPERIMENT #1
     # env_id = 'cloth_sewts_minimal'
     # env = dmc2gym.make(domain_name='cloth_sewts_minimal_1', task_name='easy', seed=1) #dmc2gym package
     
     # EXPERIMENT #2
-    env_id = 'cloth_sewts_minimal'
-    env = dmc2gym.make(domain_name='cloth_sewts_minimal_2', task_name='easy', seed=1) #dmc2gym package
+    # env_id = 'cloth_sewts_minimal'
+    # env = dmc2gym.make(domain_name='cloth_sewts_minimal', task_name='easy', seed=1) #dmc2gym package
     
     # EXPERIMENT #3
     # env_id = 'cloth_sewts_minimal'
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     os.chdir(path_to_output)
     observation = env.reset()
     model = SAC("MlpPolicy", env, learning_starts=1024, 
-                tensorboard_log='/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines_4',
+                tensorboard_log='/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/',
                 batch_size=256, verbose=1)
     step = 0
     reward = 0
@@ -60,14 +60,14 @@ if __name__ == '__main__':
         model.set_env(env)
         observation = env.reset()     
         
-        # model.learn(total_timesteps=1000000, reset_num_timesteps = True, callback = stable_baselines_logging.ImageRecorderCallback(), log_interval=1) # log_interval = no. of episodes
+        model.learn(total_timesteps=100000, reset_num_timesteps = True, callback = stable_baselines_logging.ImageRecorderCallback(), log_interval=1) # log_interval = no. of episodes
         # timesteps = log_interval * 2000
         
         print("/nLEARNT")
         
         # EXPERIMENT #0 
-        # model.save("/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines_4/SAC_3/cloth_sewts_minimal")
-        # model = SAC.load("/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines_4/SAC_1/pendulum")
+        model.save("/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines_4/SAC_3/cloth_sewts_minimal")
+        model = SAC.load("/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines_4/SAC_1/pendulum")
         
         # EXPERIMENT #1
         # model.save("/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines_4/SAC_3/cloth_sewts_minimal")
@@ -75,7 +75,7 @@ if __name__ == '__main__':
         
         # EXPERIMENT #2
         # model.save("/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines_4/SAC_3/cloth_sewts_minimal")
-        model = SAC.load("/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines_4/SAC_3/cloth_sewts_minimal")
+        # model = SAC.load("/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines_4/SAC_3/cloth_sewts_minimal")
         
         # EXPERIMENT #3
         # model.save("/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines_4/SAC_3/cloth_sewts_minimal")

@@ -4,7 +4,6 @@ channels:
   - anaconda
   - defaults
 dependencies:
-  - pip
   - absl-py=0.10.0=py38_0
   - blas=1.0=mkl
   - bzip2=1.0.8=h7b6447c_0
@@ -39,13 +38,17 @@ dependencies:
   - ncurses=6.2=he6710b0_1
   - nettle=3.7.2=hbbd107a_1
   - ninja=1.10.2=hff7bd54_1
+  - numpy=1.20.1=py38h93e21f0_0
   - numpy-base=1.20.1=py38h7d8b39e_0
   - olefile=0.46=py_0
   - openh264=2.1.0=hd408876_0
   - openssl=1.1.1k=h27cfd23_0
+  - pillow=8.0.0=py38h9a89aac_0
+  - pip=20.2.4=py38_0
   - python=3.8.5=h7579374_1
   - pytorch=1.8.0=py3.8_cuda10.2_cudnn7.6.5_0
   - readline=8.0=h7b6447c_0
+  - setuptools=50.3.0=py38hb0f4dca_1
   - six=1.15.0=py_0
   - sqlite=3.33.0=h62c20be_0
   - tk=8.6.10=hbc83047_0
@@ -57,83 +60,46 @@ dependencies:
   - zlib=1.2.11=h7b6447c_3
   - zstd=1.4.9=haebb681_0
   - pip:
-    - abr-control==0.1.0
     - alphashape==1.3.1
-    - astunparse==1.6.3
-    - attrs==21.2.0
     - cffi==1.14.5
     - chardet==4.0.0
-    - click==8.0.0
+    - click==8.0.1
     - click-log==0.3.2
     - cloudpickle==1.6.0
     - cycler==0.10.0
     - cython==0.29.23
     - decorator==4.4.2
-    - dm-control==0.0.0
+    - dm-control==0.0.364896371
     - dm-env==1.4
     - dm-tree==0.1.6
     - dmc2gym==1.0.0
-    - fasteners==0.16
-    - flatbuffers==1.12
+    - fasteners==0.16.3
     - future==0.18.2
-    - gast==0.4.0
-    - gcc7==0.0.7
     - glfw==2.1.0
-    - google-pasta==0.2.0
-    - grpcio==1.34.1
-    - gym==0.18.0
-    - gym-dmcontrol==0.0.3
-    - h5py==3.1.0
+    - gym==0.18.3
+    - h5py==3.2.1
     - idna==2.10
     - imageio==2.9.0
-    - iniconfig==1.1.1
-    - keras-nightly==2.5.0.dev2021032900
-    - keras-preprocessing==1.1.2
     - kiwisolver==1.3.1
     - labmaze==1.0.4
     - lxml==4.6.3
     - matplotlib==3.4.2
-    - memory-profiler==0.58.0
-    - mpmath==1.2.1
     - mujoco-py==2.0.2.8
-    - mushroom-rl==1.6.1
     - networkx==2.5.1
-    - numpy==1.20.3
-    - numpy-ml==0.1.2
-    - oauthlib==3.1.0
-    - opt-einsum==3.3.0
-    - packaging==20.9
     - pandas==1.2.4
-    - pillow==7.2.0
-    - pip==21.1.2
-    - pluggy==0.13.1
-    - protobuf==3.16.0
-    - psutil==5.8.0
-    - py==1.10.0
-    - pybullet==3.1.7
-    - pycocotools==2.0.0
+    - protobuf==3.17.3
     - pycparser==2.20
-    - pygame==2.0.1
-    - pyglet==1.5.0
+    - pyglet==1.5.15
     - pyopengl==3.1.5
     - pyparsing==2.4.7
-    - pysimplegui==4.41.2
-    - pytest==6.2.4
     - python-dateutil==2.8.1
     - pytz==2021.1
     - requests==2.25.1
     - rtree==0.9.7
-    - scikit-learn==0.24.2
-    - scipy==1.6.3
-    - setuptools==57.0.0
+    - scipy==1.7.0
     - shapely==1.7.1
-    - sympy==1.8
-    - tensorflow-estimator==2.5.0
-    - termcolor==1.1.0
-    - threadpoolctl==2.1.0
-    - toml==0.10.2
-    - tqdm==4.60.0
-    - trimesh==3.9.18
-    - urllib3==1.26.4
-    - wrapt==1.12.1
+    - stable-baselines3==1.0
+    - tqdm==4.61.1
+    - trimesh==3.9.20
+    - urllib3==1.26.5
 prefix: /home/chandandeep/anaconda3/envs/rlpyt

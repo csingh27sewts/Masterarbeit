@@ -22,21 +22,13 @@ if __name__ == '__main__':
     n_games = 1
     # Load environment
 
-    # EXPERIMENT #0
-    # env_id = 'pendulum'
-    env = gym.make('Pendulum-v0')   
-    
     # EXPERIMENT #1
-    # env_id = 'cloth_sewts_minimal'
-    # env = dmc2gym.make(domain_name='cloth_sewts_minimal_1', task_name='easy', seed=1) #dmc2gym package
+    # env_id = 'pendulum'
+    # env = gym.make('Pendulum-v0')   
     
     # EXPERIMENT #2
-    # env_id = 'cloth_sewts_minimal'
-    # env = dmc2gym.make(domain_name='cloth_sewts_minimal', task_name='easy', seed=1) #dmc2gym package
-    
-    # EXPERIMENT #3
-    # env_id = 'cloth_sewts_minimal'
-    # env = dmc2gym.make(domain_name='cloth_sewts_minimal_3', task_name='easy', seed=1) #dmc2gym package
+    env_id = 'cloth_sewts_minimal'
+    env = dmc2gym.make(domain_name=env_id, task_name='easy', seed=1) #dmc2gym package
 
     # create output folder for current experiment
     path_to_output = os.getcwd() + '/output'
@@ -61,26 +53,13 @@ if __name__ == '__main__':
         observation = env.reset()     
         
         model.learn(total_timesteps=100000, reset_num_timesteps = True, callback = stable_baselines_logging.ImageRecorderCallback(), log_interval=1) # log_interval = no. of episodes
-        # timesteps = log_interval * 2000
         
         print("/nLEARNT")
         
-        # EXPERIMENT #0 
-        model.save("/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines_4/SAC_3/cloth_sewts_minimal")
-        model = SAC.load("/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines_4/SAC_1/pendulum")
-        
         # EXPERIMENT #1
-        # model.save("/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines_4/SAC_3/cloth_sewts_minimal")
-        # model = SAC.load("/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines_4/SAC_2/cloth_sewts_minimal")
-        
-        # EXPERIMENT #2
-        # model.save("/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines_4/SAC_3/cloth_sewts_minimal")
-        # model = SAC.load("/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines_4/SAC_3/cloth_sewts_minimal")
-        
-        # EXPERIMENT #3
-        # model.save("/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines_4/SAC_3/cloth_sewts_minimal")
-        # model = SAC.load("/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines_4/SAC_4/cloth_sewts_minimal")
- 
+        location = "/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines/SAC_1/"
+        model.save(location)
+        model = SAC.load(location)
 
         while done is False :
             # Move to game folder
@@ -116,4 +95,3 @@ if __name__ == '__main__':
             plt.close()
             # plt.savefig('ok.png')
             print("Done /n")
-

@@ -19,7 +19,7 @@ import stable_baselines_logging
 if __name__ == '__main__':
    
     # Define environment'
-    n_games = 1
+    n_games = 100
     # Load environment
 
     # EXPERIMENT #1
@@ -34,6 +34,7 @@ if __name__ == '__main__':
     path_to_output = os.getcwd() + '/output'
     os.chdir(path_to_output)
     observation = env.reset()
+    
     model = SAC("MlpPolicy", env, learning_starts=1024, 
                 tensorboard_log='/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/',
                 batch_size=256, verbose=1)
@@ -49,14 +50,21 @@ if __name__ == '__main__':
         #    env.step(np.array([0.,0.])) # for cloth_corner
         # Change directory to current environment path
         print("LEARNING .../n")
+            
         model.set_env(env)
-        observation = env.reset()     
-        
-        # model.learn(total_timesteps=100000, reset_num_timesteps = True, callback = stable_baselines_logging.ImageRecorderCallback(), log_interval=1) # log_interval = no. of episodes
+        observation = env.reset()   
+        print(observation)
+        image = env.render(mode="rgb_array", height=256, width=256)
+        # plt.imshow(image)
+        # plt.show(block=False)
+        # plt.pause(0.25)
+        # plt.close()
+
+        model.learn(total_timesteps=1000, reset_num_timesteps = True, callback = stable_baselines_logging.ImageRecorderCallback(), log_interval=1) # log_interval = no. of episodes
         
         print("/nLEARNT")
         
-        # EXPERIMENT #1
+        # EXPERIMENT #2
         location = "/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines/SAC_1/"
         # model.save(location)
         model = SAC.load(location)
@@ -88,10 +96,12 @@ if __name__ == '__main__':
             # (H for height, W for width, C for channel)
             # See https://pytorch.org/docs/stable/tensorboard.html
             # for supported formats
+            
             image = env.render(mode="rgb_array", height=256, width=256) 
             plt.imshow(image)
             plt.show(block=False)
-            plt.pause(0.2)
+            plt.pause(0.25)
             plt.close()
+            
             # plt.savefig('ok.png')
             print("Done /n")

@@ -27,7 +27,7 @@ from dm_control.suite import base
 from dm_control.suite import common
 from dm_control.utils import containers
 import numpy as np
-
+from random import randrange
 from dm_control import viewer
 
 
@@ -87,20 +87,23 @@ class Cloth(base.Task):
     return specs.BoundedArray(
           shape=(2,), dtype=np.double, minimum=[-1.0] * 2, maximum=[1.0] * 2)
   def initialize_episode(self,physics):
-
-    physics.named.data.xfrc_applied['B1_1', :3] = np.array([0,0,-2])
-    # physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
-
+    point = randrange(len(INDEX_ACTION))
+    physics.named.data.xfrc_applied[INDEX_ACTION[point], :3] = np.array([0, 0, 2])
+    for i in range(0,50):
+        physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3] = np.random.uniform(-1,.1,size=3)
+        physics.step()
     super(Cloth, self).initialize_episode(physics)
 
   def before_step(self, action, physics):
       """Sets the control signal for the actuators to values in `action`."""
   #     # Support legacy internal code.
 
-      physics.named.data.xfrc_applied[:,:3]=np.zeros((3,))
+      physics.named.data.xfrc_applied[:,:3]= np.zeros((3,))
+      # physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3] = np.random.uniform(-.5,.5,size=3)
 
       index = 0
-      
+      print("action")
+      print(action)
       goal_position = action * 0.05
       corner_action = CORNER_INDEX_ACTION[index]
       corner_geom = CORNER_INDEX_POSITION[index]

@@ -138,8 +138,8 @@ class Cloth(base.Task):
     x_G00 = physics.named.data.geom_xpos['G0_0'][0]
     y_G00 = physics.named.data.geom_xpos['G0_0'][1]
     z_G00 = physics.named.data.geom_xpos['G0_0'][2] 
-    dist1 = np.sqrt(x_G00 ** 2 + y_G00 ** 2 + z_G00 ** 2)
-    dist2 = np.sqrt(x_G00 ** 2 + (y_G00 - 0.03) ** 2 + z_G00 ** 2)
+    dist1 = np.sqrt(x_G00 ** 2 + y_G00 ** 2)
+    dist2 = np.sqrt(x_G00 ** 2 + (y_G00 - 0.03) ** 2)
    
     if dist1 < 0.05:
         reward1 = 500 - 100 * dist1
@@ -158,4 +158,3 @@ class Cloth(base.Task):
     reward = reward1 + reward2
 
     return reward
-

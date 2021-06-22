@@ -33,7 +33,13 @@ if __name__ == '__main__':
     # create output folder for current experiment
     path_to_output = os.getcwd() + '/output'
     os.chdir(path_to_output)
-    observation = env.reset()
+    for i in range(100):
+        observation = env.reset()
+        image = env.render(mode="rgb_array", height=256, width=256) 
+        plt.imshow(image)
+        plt.show(block=False)
+        plt.pause(0.25)
+        plt.close()
     
     model = SAC("MlpPolicy", env, learning_starts=1024, 
                 tensorboard_log='/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/',
@@ -66,7 +72,7 @@ if __name__ == '__main__':
         
         # EXPERIMENT #2
         location = "/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines/SAC_1/"
-        # model.save(location)
+        model.save(location)
         model = SAC.load(location)
 
         while done is False :

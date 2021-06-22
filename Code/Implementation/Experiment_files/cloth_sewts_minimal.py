@@ -30,7 +30,6 @@ import numpy as np
 from random import randrange
 from dm_control import viewer
 
-
 _DEFAULT_TIME_LIMIT = 20
 SUITE = containers.TaggedTasks()
 CORNER_INDEX_ACTION=['B0_0','B0_2','B2_0','B2_2']
@@ -86,11 +85,12 @@ class Cloth(base.Task):
     # LEFT CORNER ACTION [x,y,z]
     return specs.BoundedArray(
           shape=(2,), dtype=np.double, minimum=[-1.0] * 2, maximum=[1.0] * 2)
+
   def initialize_episode(self,physics):
     point = randrange(len(INDEX_ACTION))
-    physics.named.data.xfrc_applied[INDEX_ACTION[point], :3] = np.array([0, 0, 2])
+    physics.named.data.xfrc_applied[INDEX_ACTION[point], :3] = np.array([0, 0, -2])
     for i in range(0,50):
-        physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3] = np.random.uniform(-1,.1,size=3)
+        physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:2] = np.random.uniform(-.5,.5,size=2) * 5
         physics.step()
     super(Cloth, self).initialize_episode(physics)
 

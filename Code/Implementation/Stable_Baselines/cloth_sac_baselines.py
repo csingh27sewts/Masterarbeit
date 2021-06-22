@@ -52,13 +52,13 @@ if __name__ == '__main__':
         model.set_env(env)
         observation = env.reset()     
         
-        model.learn(total_timesteps=100000, reset_num_timesteps = True, callback = stable_baselines_logging.ImageRecorderCallback(), log_interval=1) # log_interval = no. of episodes
+        # model.learn(total_timesteps=100000, reset_num_timesteps = True, callback = stable_baselines_logging.ImageRecorderCallback(), log_interval=1) # log_interval = no. of episodes
         
         print("/nLEARNT")
         
         # EXPERIMENT #1
         location = "/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines/SAC_1/"
-        model.save(location)
+        # model.save(location)
         model = SAC.load(location)
 
         while done is False :
@@ -80,7 +80,7 @@ if __name__ == '__main__':
             print("reward")
             print(reward)
             observation = obs
-            if step == 500: # No. of steps should be > batch size of 250 as the agent learns only when the batch is full
+            if step == 500 or reward > 499: # No. of steps should be > batch size of 250 as the agent learns only when the batch is full
                 done = True
                 obs = env.reset()
             # image = env.render()
@@ -88,7 +88,7 @@ if __name__ == '__main__':
             # (H for height, W for width, C for channel)
             # See https://pytorch.org/docs/stable/tensorboard.html
             # for supported formats
-            image = env.render(mode="rgb_array") 
+            image = env.render(mode="rgb_array", height=256, width=256) 
             plt.imshow(image)
             plt.show(block=False)
             plt.pause(0.2)

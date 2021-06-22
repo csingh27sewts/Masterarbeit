@@ -101,7 +101,7 @@ class Cloth(base.Task):
 
       index = 0
       
-      goal_position = action * 0.05
+      goal_position = action * 0.05 * 0.5
       corner_action = CORNER_INDEX_ACTION[index]
       corner_geom = CORNER_INDEX_POSITION[index]
 
@@ -128,7 +128,7 @@ class Cloth(base.Task):
     a = physics.named.data.geom_xpos['G0_0']
     b = physics.named.data.geom_xpos['G0_1']
     c = physics.named.data.geom_xpos['G0_2']
-    obs_ = np.array ([a])
+    obs_ = np.array ([a,b])
     obs['position'] = obs_.reshape(-1).astype('float32')
     # print(obs)
     return obs
@@ -138,13 +138,32 @@ class Cloth(base.Task):
     x_G00 = physics.named.data.geom_xpos['G0_0'][0]
     y_G00 = physics.named.data.geom_xpos['G0_0'][1]
     z_G00 = physics.named.data.geom_xpos['G0_0'][2] 
-    dist = np.sqrt(x_G00 ** 2 + y_G00 ** 2)
-    
-    if dist < 0.05:
-        reward = 500 - 100 * dist
-    elif dist < 0.1:
-        reward = - 100 * dist
+    dist1 = np.sqrt(x_G00 ** 2 + y_G00 ** 2 + z_G00 ** 2)
+    dist2 = np.sqrt(x_G00 ** 2 + (y_G00 - 0.03) ** 2 + z_G00 ** 2)
+    dist3 = np.sqrt(x_G00 ** 2 + (y_G00 - 0.06) ** 2 + z_G00 ** 2)
+  
+    if dist1 < 0.05:
+        reward1 = 500 - 100 * dist1
+    elif dist1 < 0.1:
+        reward1 = - 100 * dist1
     else: 
-        reward = -1000 * dist
+        reward1 = -1000 * dist1
+
+    if dist2 < 0.05:
+        reward2 = 500 - 100 * dist2
+    elif dist2 < 0.1:
+        reward2 = - 100 * dist2
+    else: 
+        reward2 = -1000 * dist2
+ 
+    if dist3 < 0.05:
+        reward3 = 500 - 100 * dist3
+    elif dist3 < 0.1:
+        reward3 = - 100 * dist3
+    else: 
+        reward3 = -1000 * dist3
+
+    reward = reward1 + reward2 + reward3
+
     return reward
 

@@ -89,6 +89,9 @@ class Cloth(base.Task):
   def initialize_episode(self,physics):
     point = randrange(len(INDEX_ACTION))
     physics.named.data.xfrc_applied[INDEX_ACTION[point], :3] = np.array([0, 0, -2])
+    for i in range(0,50):
+        physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:2] = np.random.uniform(-.5,.5,size=2) * 5
+        physics.step()
     super(Cloth, self).initialize_episode(physics)
 
   def before_step(self, action, physics):

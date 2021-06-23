@@ -33,13 +33,13 @@ if __name__ == '__main__':
     # create output folder for current experiment
     path_to_output = os.getcwd() + '/output'
     os.chdir(path_to_output)
-    for i in range(100):
-        observation = env.reset()
-        image = env.render(mode="rgb_array", height=256, width=256) 
-        plt.imshow(image)
-        plt.show(block=False)
-        plt.pause(0.25)
-        plt.close()
+    # for i in range(100):
+    observation = env.reset()
+        # image = env.render(mode="rgb_array", height=256, width=256) 
+        # plt.imshow(image)
+        # plt.show(block=False)
+        # plt.pause(0.25)
+        # plt.close()
     
     model = SAC("MlpPolicy", env, learning_starts=1024, 
                 tensorboard_log='/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/',
@@ -66,12 +66,12 @@ if __name__ == '__main__':
         # plt.pause(0.25)
         # plt.close()
 
-        model.learn(total_timesteps=1000, reset_num_timesteps = True, callback = stable_baselines_logging.ImageRecorderCallback(), log_interval=1) # log_interval = no. of episodes
+        model.learn(total_timesteps=50000, reset_num_timesteps = True, callback = stable_baselines_logging.ImageRecorderCallback(), log_interval=1) # log_interval = no. of episodes
         
         print("/nLEARNT")
         
         # EXPERIMENT #2
-        location = "/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines/SAC_1/"
+        location = "/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines/SAC_1/cloth_sewts_minimal"
         model.save(location)
         model = SAC.load(location)
 

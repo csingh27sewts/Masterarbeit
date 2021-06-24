@@ -1,0 +1,15 @@
+# Sample IGMR LaTeX document build
+# Author: Florian Freikowski <freikowski@igmr.rwth-aachen.de>
+# 
+# This file need to be placed in the root of your GitLab repository
+# Change the directory (- cd document_path/) to access your LaTeX document,
+# if you have an other directory in the "script" part
+image: igm-git.igm.rwth-aachen.de:4999/it/latex/igmr-package
+
+build:
+  stage: build
+  artifacts:
+    paths:
+      - Thesis.pdf
+  script:
+    - latexmk -pdf Thesis.tex

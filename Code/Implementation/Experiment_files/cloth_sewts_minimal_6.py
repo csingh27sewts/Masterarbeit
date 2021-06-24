@@ -39,7 +39,7 @@ INDEX_ACTION=['B0_0','B0_1','B0_2','B1_0','B2_0','B1_1','B1_2','B2_1','B2_2']
 def get_model_and_assets():
   """Returns a tuple containing the model XML string and a dict of assets."""
 
-  return common.read_model('cloth_sewts_minimal_5.xml'),common.ASSETS
+  return common.read_model('cloth_sewts_minimal_6.xml'),common.ASSETS
 
 W=64
 
@@ -128,7 +128,8 @@ class Cloth(base.Task):
     a = physics.named.data.geom_xpos['G0_0']
     b = physics.named.data.geom_xpos['G0_1']
     c = physics.named.data.geom_xpos['G0_2']
-    obs_ = np.array ([a,b])
+    d = physics.named.data.geom_xpos['G0_3']
+    obs_ = np.array ([a,b,c,d])
     obs['position'] = obs_.reshape(-1).astype('float32')
     # print(obs)
     return obs

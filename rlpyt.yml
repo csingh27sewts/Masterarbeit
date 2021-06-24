@@ -4,6 +4,7 @@ channels:
   - anaconda
   - defaults
 dependencies:
+  - pip
   - absl-py=0.10.0=py38_0
   - blas=1.0=mkl
   - bzip2=1.0.8=h7b6447c_0

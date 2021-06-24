@@ -19,7 +19,7 @@ import stable_baselines_logging
 if __name__ == '__main__':
    
     # Define environment'
-    n_games = 100
+    n_games = 1
     # Load environment
 
     # EXPERIMENT #1
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     # env = gym.make('Pendulum-v0')   
     
     # EXPERIMENT #2
-    env_id = 'cloth_sewts_minimal'
+    env_id = 'cloth_sewts_minimal_1'
     env = dmc2gym.make(domain_name=env_id, task_name='easy', seed=1) #dmc2gym package
 
     # create output folder for current experiment
@@ -66,13 +66,13 @@ if __name__ == '__main__':
         # plt.pause(0.25)
         # plt.close()
 
-        model.learn(total_timesteps=50000, reset_num_timesteps = True, callback = stable_baselines_logging.ImageRecorderCallback(), log_interval=1) # log_interval = no. of episodes
+        # model.learn(total_timesteps=200000, reset_num_timesteps = True, callback = stable_baselines_logging.ImageRecorderCallback(), log_interval=1) # log_interval = no. of episodes
         
         print("/nLEARNT")
         
-        # EXPERIMENT #2
-        location = "/home/chandandeep/Project/Masterarbeit/src/Masterarbeit/Code/output/sac_baselines/SAC_1/cloth_sewts_minimal"
-        model.save(location)
+        # EXPERIMENT #
+        location = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_1/cloth_sewts_minimal"
+        # model.save(location)
         model = SAC.load(location)
 
         while done is False :
@@ -94,7 +94,10 @@ if __name__ == '__main__':
             print("reward")
             print(reward)
             observation = obs
-            if step == 500 or reward > 499: # No. of steps should be > batch size of 250 as the agent learns only when the batch is full
+            if step == 500 or reward > 499: # EXPERIMENT_1
+            # if step == 500 or reward > 0.99: # EXPERIMENT_1_1
+            # if step == 500 or reward > 995: # EXPERIMENT_2
+            # if step == 500 or reward > 1490: # EXPERIMENT_3
                 done = True
                 obs = env.reset()
             # image = env.render()

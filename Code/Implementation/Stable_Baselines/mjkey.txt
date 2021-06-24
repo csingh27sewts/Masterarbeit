@@ -1,0 +1,20 @@
+MuJoCo Pro Personal license activation key, number 78764, type 6.
+
+Issued to Mudit Sharma <mudit.sharma@rwth-aachen.de>.
+
+Expires May 17, 2022.
+
+This file activates MuJoCo Pro on a single computer with id:
+LINUX_u740ge9V6Sa6MBn2s0PRGAVS121NE5m40_1NM181
+
+Do not modify this file. Its entire content, including the
+plain text section, is used by the activation manager.
+
+d864f02493f49b405b0a3665f3d0d12b395b60d00046ded2ab38c3741706b570
+755a9145fa66361ed507bb9c3af925b1c2835d32ff18d533a28352b00d96abaa
+d64a3cb85345620210040a94e652bfb01bc4f4c8e76f3ca7bf340a96a0781289
+6bb5c71d3b81cbc31becbb1d321252318da916cc395845be47cc04a7d347965f
+412c8a58b9e87bf852e02dc8c87962d11a3d86ca36deda27f069c08453eaa770
+015e9242e564e963905cab03bab2021d92958951f39d17c7cf6c81c7f0421ac0
+3de3f685f061ecbbcd3b2c21de467500c58af9fc0f23b24bf516c127b5e4863c
+aea009864e52e135de36ca37370965e321014708df9d34de2fe9babaf217957d

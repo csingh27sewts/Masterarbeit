@@ -128,7 +128,7 @@ class Cloth(base.Task):
     a = physics.named.data.geom_xpos['G0_0']
     b = physics.named.data.geom_xpos['G0_1']
     c = physics.named.data.geom_xpos['G0_2']
-    obs_ = np.array ([a,b,C])
+    obs_ = np.array ([a,b,c])
     obs['position'] = obs_.reshape(-1).astype('float32')
     # print(obs)
     return obs

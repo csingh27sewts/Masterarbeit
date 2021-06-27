@@ -27,8 +27,9 @@ from dm_control.suite import base
 from dm_control.suite import common
 from dm_control.utils import containers
 import numpy as np
-from random import randrange
+
 from dm_control import viewer
+
 
 _DEFAULT_TIME_LIMIT = 20
 SUITE = containers.TaggedTasks()
@@ -85,23 +86,25 @@ class Cloth(base.Task):
     # LEFT CORNER ACTION [x,y,z]
     return specs.BoundedArray(
           shape=(2,), dtype=np.double, minimum=[-1.0] * 2, maximum=[1.0] * 2)
-
   def initialize_episode(self,physics):
-    point = randrange(len(INDEX_ACTION))
-    physics.named.data.xfrc_applied[INDEX_ACTION[point], :3] = np.array([0, 0, -2])
+
+    physics.named.data.xfrc_applied['B1_1', :3] = np.array([0,0,-2])
+    # physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
+    for i in range(0,50):
+        physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:2] = np.random.uniform(-.5,.5,size=2) * 5
+        physics.step()
+
     super(Cloth, self).initialize_episode(physics)
 
   def before_step(self, action, physics):
       """Sets the control signal for the actuators to values in `action`."""
   #     # Support legacy internal code.
 
-      physics.named.data.xfrc_applied[:,:3]= np.zeros((3,))
-      # physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3] = np.random.uniform(-.5,.5,size=3)
+      physics.named.data.xfrc_applied[:,:3]=np.zeros((3,))
 
       index = 0
-      print("action")
-      print(action)
-      goal_position = action * 0.05
+      
+      goal_position = action * 0.05 * 0.5
       corner_action = CORNER_INDEX_ACTION[index]
       corner_geom = CORNER_INDEX_POSITION[index]
 
@@ -128,7 +131,7 @@ class Cloth(base.Task):
     a = physics.named.data.geom_xpos['G0_0']
     b = physics.named.data.geom_xpos['G0_1']
     c = physics.named.data.geom_xpos['G0_2']
-    obs_ = np.array ([a])
+    obs_ = np.array ([a,b])
     obs['position'] = obs_.reshape(-1).astype('float32')
     # print(obs)
     return obs
@@ -138,7 +141,44 @@ class Cloth(base.Task):
     x_G00 = physics.named.data.geom_xpos['G0_0'][0]
     y_G00 = physics.named.data.geom_xpos['G0_0'][1]
     z_G00 = physics.named.data.geom_xpos['G0_0'][2] 
-    dist = z_G00
-    reward = -1000 * dist
-    return reward
 
+    x_G01 = physics.named.data.geom_xpos['G0_1'][0]
+    y_G01 = physics.named.data.geom_xpos['G0_1'][1]
+    z_G01 = physics.named.data.geom_xpos['G0_1'][2] 
+ 
+    dist1 = np.sqrt(x_G00 ** 2 + y_G00 ** 2)
+    dist2 = np.sqrt((x_G01 + 0.03) ** 2 + y_G01 ** 2) # move to (-0.03,0)
+    
+    if dist1 < 0.01:
+        reward1 = 1000 - 100 * dist1   
+
+    if dist1 < 0.02:
+        reward1 = 750 - 100 * dist1  
+
+    if dist1 < 0.05:
+        reward1 = 500 - 100 * dist1
+
+    elif dist1 < 0.1:
+        reward1 = - 100 * dist1
+
+    else: 
+        reward1 = -1000 * dist1
+
+    if dist2 < 0.01:
+        reward2 = 1000 - 100 * dist2   
+
+    if dist2 < 0.02:
+        reward2 = 750 - 100 * dist2  
+
+    if dist2 < 0.05:
+        reward2 = 500 - 100 * dist2
+
+    elif dist2 < 0.1:
+        reward2 = - 100 * dist2
+    
+    else: 
+        reward2 = -1000 * dist2
+ 
+    reward = reward1 + reward2
+
+    return reward

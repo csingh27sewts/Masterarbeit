@@ -90,6 +90,7 @@ class Cloth(base.Task):
 
     physics.named.data.xfrc_applied['B1_1', :3] = np.array([0,0,-2])
     # physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
+
     for i in range(0,50):
         physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:2] = np.random.uniform(-.5,.5,size=2) * 5
         physics.step()
@@ -146,11 +147,11 @@ class Cloth(base.Task):
     y_G01 = physics.named.data.geom_xpos['G0_1'][1]
     z_G01 = physics.named.data.geom_xpos['G0_1'][2] 
  
-    dist1 = z_G00
-    dist2 = z_G01
+    dist1 = (z_G00 - 0.017) **2
+    dist2 = (z_G01 - 0.017) **2
     
-    reward1 = - 1000 * dist1
-    reward2 = - 1000 * dist2
+    reward1 = - 1000 * np.sqrt(dist1)
+    reward2 = - 1000 * np.sqrt(dist2)
 
     reward = reward1 + reward2
 

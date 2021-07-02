@@ -39,7 +39,7 @@ INDEX_ACTION=['B0_0','B0_1','B0_2','B1_0','B2_0','B1_1','B1_2','B2_1','B2_2']
 def get_model_and_assets():
   """Returns a tuple containing the model XML string and a dict of assets."""
 
-  return common.read_model('cloth_sewts_minimal_raw.xml'),common.ASSETS
+  return common.read_model('cloth_sewts_minimal.xml'),common.ASSETS
 
 W=64
 
@@ -90,7 +90,7 @@ class Cloth(base.Task):
 
     physics.named.data.xfrc_applied['B1_1', :3] = np.array([0,0,-2])
     # physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
-   super(Cloth, self).initialize_episode(physics)
+    super(Cloth, self).initialize_episode(physics)
 
   def before_step(self, action, physics):
       """Sets the control signal for the actuators to values in `action`."""
@@ -137,8 +137,13 @@ class Cloth(base.Task):
     x_G00 = physics.named.data.geom_xpos['G0_0'][0]
     y_G00 = physics.named.data.geom_xpos['G0_0'][1]
     z_G00 = physics.named.data.geom_xpos['G0_0'][2] 
+
+    x_G01 = physics.named.data.geom_xpos['G0_1'][0]
+    y_G01 = physics.named.data.geom_xpos['G0_1'][1]
+    z_G01 = physics.named.data.geom_xpos['G0_1'][2] 
+ 
     dist1 = np.sqrt(x_G00 ** 2 + y_G00 ** 2)
-    dist2 = np.sqrt((x_G00 + 0.03) ** 2 + y_G00 ** 2) # move to (-0.03,0)
+    dist2 = np.sqrt((x_G01 + 0.03) ** 2 + y_G01 ** 2) # move to (-0.03,0)
     
     if dist1 < 0.01:
         reward1 = 1000 - 100 * dist1   

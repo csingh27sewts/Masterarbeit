@@ -42,29 +42,19 @@ Reward - 500 when it reaches , 500 - 10 * dist from center upto dist of 0.05, -1
 ##### EXPERIMENT 2 ################
 
 3 X 3 cloth two adjacent points moved to fixed positions
-
-# EXPERIMENT #2_0 :
-Output - SAC_2_0   
-*cloth_sewts_minimal_2_0.py* 
-Description - Simplistic experiment to make two cloth points move to fixed positions
-Cloth - 3X3  
-Goal - Move cloth corner G00 to center (0, 0) and G01 to (0,0.03)  
-State - (x,y,z) of G00
-Reward - 500 when it reaches , 500 - 100 * dist from center upto dist of 0.05, -100 * dist upto dist of 0.1 and -1000 * dist otherwise  
-
 # EXPERIMENT #2_1 :
 Output - SAC_2_1   
 *cloth_sewts_minimal_2_1.py* 
-Description - Simplistic experiment to make two cloth points move to fixed positions
+Description - Simplistic experiment to make two cloth points z = 0
 Cloth - 3X3  
-Goal - Move cloth corner G00 to center (0, 0) and G01 to (0,0.03)  
+Goal - Make cloth corner G00 and G01 z coordinates = 0
 State - (x,y,z) of G00
 Reward - 500 when it reaches , 500 - 100 * dist from center upto dist of 0.05, -100 * dist upto dist of 0.1 and -100 * dist otherwise  
 
 # EXPERIMENT #2_2 :
 Output - SAC_2_2   
 *cloth_sewts_minimal_2_2.py* 
-Description - Simplistic experiment to make two cloth points (randomly initialized) move to fixed positions
+Description - Simplistic experiment to make two cloth points move to fixed positions
 Cloth - 3X3  
 Goal - Move cloth corner G00 to center (0, 0) and G01 to (-0.03,0)  
 State - (x,y,z) of G00
@@ -73,9 +63,18 @@ Reward - 500 when it reaches , 500 - 100 * dist from center upto dist of 0.05, -
 # EXPERIMENT #2_3 :
 Output - SAC_2_3   
 *cloth_sewts_minimal_2_3.py* 
-Description - Simplistic experiment to make two cloth points go to fixed positions
+Description - Simplistic experiment to make two cloth points  go to fixed positions
 Cloth - 3X3
 Goal - Move cloth corner G00 to center (0, 0) and G01 to (-0.03,0)  
+State - (x,y,z) of G00
+Reward - 500 when it reaches , 500 - 100 * dist from center upto dist of 0.05, -100 * dist upto dist of 0.1 and -100 * dist otherwise  - Different reward
+
+# EXPERIMENT #2_3 :
+Output - SAC_2_3   
+*cloth_sewts_minimal_2_3.py* 
+Description - Simplistic experiment to make two cloth points (randomly initialized) go to fixed positions
+Cloth - 3X3
+Goal - Move cloth corner G00 to center (0, 0, 0) and G01 to (-0.03, 0, 0)  - z coordinate also move to 0
 State - (x,y,z) of G00
 Reward - 500 when it reaches , 500 - 100 * dist from center upto dist of 0.05, -100 * dist upto dist of 0.1 and -100 * dist otherwise  
 

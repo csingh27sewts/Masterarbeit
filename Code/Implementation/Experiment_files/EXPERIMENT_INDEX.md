@@ -39,6 +39,51 @@ Goal - Move cloth corner G00 to center (0, 0)
 State - (x,y,z) of G00
 Reward - 500 when it reaches , 500 - 10 * dist from center upto dist of 0.05, -10 * dist upto dist of 0.1 and -100 * dist otherwise  
 
+# EXPERIMENT #1_4 : 
+*cloth_sewts_minimal_1_4.py* 
+Output - SAC_1_4  
+Description - Simplistic experiment to make one cloth move to fixed position
+Cloth - 3X3  
+Goal - Move cloth point G01 to center (-0.03, 0)  
+State - (x,y,z) of G01
+Reward - 500 when it reaches , 500 - 10 * dist from center upto dist of 0.05, -10 * dist upto dist of 0.1 and -100 * dist otherwise  
+
+# EXPERIMENT #1_5 : 
+*cloth_sewts_minimal_1_5.py* 
+Output - SAC_1_5  
+Description - Simplistic experiment to make one cloth move to fixed position
+Cloth - 3X3  
+Goal - Move cloth point G02 to center (-0.06, 0)  
+State - (x,y,z) of G01
+Reward - 500 when it reaches , 500 - 10 * dist from center upto dist of 0.05, -10 * dist upto dist of 0.1 and -100 * dist otherwise  
+
+# EXPERIMENT #1_6 : 
+*cloth_sewts_minimal_1_6.py* 
+Output - SAC_1_6  
+Description - Simplistic experiment to make one cloth move to fixed position
+Cloth - 3X3  
+Goal - Move cloth point G02 to center (-0.06, 0)  
+State - (x,y,z) of G01
+Reward - 500 when it reaches , 500 - 10 * dist from center upto dist of 0.05, -10 * dist upto dist of 0.1 and -100 * dist otherwise  
+
+# EXPERIMENT #1_7 : 
+*cloth_sewts_minimal_1_7.py* 
+Output - SAC_1_7  
+Description - Simplistic experiment to make one cloth move to fixed position
+Cloth - 3X3  
+Goal - Move cloth point G02 to center (-0.06, 0)  
+State - (x,y,z) of G01
+Reward - 500 when it reaches , 500 - 10 * dist from center upto dist of 0.05, -10 * dist upto dist of 0.1 and -100 * dist otherwise  
+
+# EXPERIMENT #1_8 : 
+*cloth_sewts_minimal_1_8.py* 
+Output - SAC_1_8  
+Description - Simplistic experiment to make one cloth move to fixed position
+Cloth - 3X3  
+Goal - Move cloth point G02 to center (-0.06, 0)  
+State - (x,y,z) of G01
+Reward - 500 when it reaches , 500 - 10 * dist from center upto dist of 0.05, -10 * dist upto dist of 0.1 and -100 * dist otherwise  
+
 ##### EXPERIMENT 2 ################
 
 3 X 3 cloth two adjacent points moved to fixed positions

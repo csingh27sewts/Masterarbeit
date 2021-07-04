@@ -40,7 +40,7 @@ INDEX_POSITION=['G0_0','G0_1','G0_2','G1_0','G2_0','G1_1','G1_2','G2_1','G2_2']
 def get_model_and_assets():
   """Returns a tuple containing the model XML string and a dict of assets."""
 
-  return common.read_model('cloth_sewts_minimal.xml'),common.ASSETS
+  return common.read_model('cloth_sewts_full.xml'),common.ASSETS
 
 W=64
 
@@ -100,13 +100,12 @@ class Cloth(base.Task):
       physics.named.data.xfrc_applied[:,:3]= np.zeros((3,))
       # physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3] = np.random.uniform(-.5,.5,size=3)
 
-      index = 1
+      index = 0
       print("action")
       print(action)
       goal_position = action * 0.05
       corner_action = INDEX_ACTION[index]
       corner_geom = INDEX_POSITION[index]
-
 
       # apply consecutive force to move the point to the target position
       position = goal_position + physics.named.data.geom_xpos[corner_geom][:2]
@@ -129,23 +128,48 @@ class Cloth(base.Task):
     a = physics.named.data.geom_xpos['G0_0']
     b = physics.named.data.geom_xpos['G0_1']
     c = physics.named.data.geom_xpos['G0_2']
-    obs_ = np.array ([c])
+    d = physics.named.data.geom_xpos['G0_3']
+    e = physics.named.data.geom_xpos['G0_4']
+    obs_ = np.array ([a,b,c,d,e])
     obs['position'] = obs_.reshape(-1).astype('float32')
     # print(obs)
     return obs
 
   def get_reward(self, physics):
     """Returns a reward to the agent."""
+    x_G00 = physics.named.data.geom_xpos['G0_0'][0]
+    y_G00 = physics.named.data.geom_xpos['G0_0'][1]
+    z_G00 = physics.named.data.geom_xpos['G0_0'][2]
+
+    x_G01 = physics.named.data.geom_xpos['G0_1'][0]
+    y_G01 = physics.named.data.geom_xpos['G0_1'][1]
+    z_G01 = physics.named.data.geom_xpos['G0_1'][2]
+
     x_G02 = physics.named.data.geom_xpos['G0_2'][0]
     y_G02 = physics.named.data.geom_xpos['G0_2'][1]
-    z_G02 = physics.named.data.geom_xpos['G0_2'][2] 
-    dist = np.sqrt((x_G02 + 0.06) ** 2 + y_G02 ** 2)
+    z_G02 = physics.named.data.geom_xpos['G0_2'][2]
 
+ 
+    x_G03 = physics.named.data.geom_xpos['G0_3'][0]
+    y_G03 = physics.named.data.geom_xpos['G0_3'][1]
+    z_G03 = physics.named.data.geom_xpos['G0_3'][2]
 
-    if dist < 0.03:
-        reward = 500 - 1000 * dist
-    elif dist < 0.09:
-        reward = - 100 * dist
-    else: 
-        reward = -1000 * dist
-    return reward
+    x_G04 = physics.named.data.geom_xpos['G0_4'][0]
+    y_G04 = physics.named.data.geom_xpos['G0_4'][1]
+    z_G04 = physics.named.data.geom_xpos['G0_4'][2]
+
+ 
+    dist1 = (z_G00 - 0.017) **2
+    dist2 = (z_G01 - 0.017) **2
+    dist3 = (z_G02 - 0.017) **2
+    dist4 = (z_G03 - 0.017) **2
+    dist5 = (z_G04 - 0.017) **2
+
+    reward1 = - 1000 * np.sqrt(dist1)
+    reward2 = - 1000 * np.sqrt(dist2)
+    reward3 = - 1000 * np.sqrt(dist3)
+    reward4 = - 1000 * np.sqrt(dist4)
+    reward5 = - 1000 * np.sqrt(dist5)
+
+    reward = reward1 + reward2 + reward3 + reward4 + reward5
+

@@ -28,30 +28,47 @@ if __name__ == '__main__':
     # env = gym.make('Pendulum-v0')   
     # Environment : 
     # /home/chandandeep/anaconda3/envs/rlpyt/lib/python3.8/site-packages/dm_control/suite/
-    
+    print(inspect.getfile(dmc2gym)) # built in path
+   
     # EXPERIMENT #2
     env_id_0 = 'cloth_sewts_minimal_1_0'
     env_id_1 = 'cloth_sewts_minimal_1_1'
     env_id_2 = 'cloth_sewts_minimal_1_2'
+    env_id_4 = 'cloth_sewts_minimal_1_4'
     env_id_6 = 'cloth_sewts_minimal_1_6'
     env_id_7 = 'cloth_sewts_minimal_1_7'
-    # env_id = [env_id_6]
-    # reward_set = [490]
+    env_id_9 = 'cloth_sewts_minimal_1_9'
+    env_id_10 = 'cloth_sewts_minimal_2_1'   
+    env_id_11 = 'cloth_sewts_minimal_2_2'   
+    env_id_13 = 'cloth_sewts_minimal_3_0'   
+
+
+    env_id = [env_id_13]
+    # reward_set = [499] #env_id_0, env_id_2
+    # reward_set = [0.997] #env_id_1
     # env_id = [env_id_7, env_id_1]
-    env_id = [env_id_6]
-    # reward_set = [0.99] #env_id_1
-    reward_set = [490] # env_id_0, env_id_2
+    # env_id = [env_id_6, env_id_9]
+    # reward_set = [490, 980] # env_id_0, env_id_2
     # reward_set = [490] # env_id_6, env_id_7
+    # reward_set = [-3] # env_id_10
+    # reward_set = [1990] # env_id_11
+    reward_set = [1480] # env_id_13
 
     # Make z 0
     # location_1 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_2_1/cloth_sewts_minimal"
     # Make corner move to fixed position
-    location_0 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_1_0/cloth_sewts_minimal"
+    location_SAC_0 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_1_0/"
+    location_0 = location_SAC_0 + "cloth_sewts_minimal"
+
     location_SAC_1 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_1_1/"
     location_1 = location_SAC_1 + "cloth_sewts_minimal"
     # Make adjacent point move to fixed position
-    location_2 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_1_2/cloth_sewts_minimal"
-    location_3 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_1_5/cloth_sewts_minimal"
+
+    location_SAC_2 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_1_2/"
+    location_2 = location_SAC_2 + "cloth_sewts_minimal"
+
+    location_SAC_4 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_1_4/"
+    location_4 = location_SAC_4 + "cloth_sewts_minimal"
 
     
     location_SAC_6 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_1_6/"
@@ -61,10 +78,22 @@ if __name__ == '__main__':
     location_SAC_7 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_1_7/"
     location_7 = location_SAC_7 + "cloth_sewts_minimal"
     
+    location_SAC_9 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_1_9/"
+    location_9 = location_SAC_9 + "cloth_sewts_minimal"
+    
+    location_SAC_10 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_2_1/"
+    location_10 = location_SAC_10 + "cloth_sewts_minimal"
+     
+    location_SAC_11 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_2_2/"
+    location_11 = location_SAC_11 + "cloth_sewts_minimal"
+ 
+    location_SAC_13 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_3_0/"
+    location_13 = location_SAC_13 + "cloth_sewts_minimal"
+ 
     location_8 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_1_8/cloth_sewts_minimal"
     
-    location_set = [location_6]
-    # location_set = [location_7]   
+    # location_set = [location_9, location_9]
+    location_set = [location_13]   
     
     path_to_output = os.getcwd() + '/output'
     
@@ -80,8 +109,8 @@ if __name__ == '__main__':
 
         os.chdir(path_to_output)
         # for i in range(100):
-        if i == 0:
-            observation = env.reset()
+        # if i == 0:
+        observation = env.reset()
         # else:
         #    observation = observation
         # image = env.render(mode="rgb_array", height=256, width=256) 
@@ -120,7 +149,7 @@ if __name__ == '__main__':
             # plt.show(block=False)
             # plt.pause(0.25)
             # plt.close()
-            # model.learn(total_timesteps=200000, reset_num_timesteps = False, callback = stable_baselines_logging.ImageRecorderCallback(), log_interval=1) # log_interval = no. of episodes
+            # model.learn(total_timesteps=120000, reset_num_timesteps = False, callback = stable_baselines_logging.ImageRecorderCallback(), log_interval=1) # log_interval = no. of episodes
             print("/nLEARNT")
             # EXPERIMENT #
             # model.save(location_set[i])
@@ -157,19 +186,19 @@ if __name__ == '__main__':
                 # (H for height, W for width, C for channel)
                 # See https://pytorch.org/docs/stable/tensorboard.html
                 # for supported formats
-                print("HERE")
+                # print("HERE")
                 
                 image = env.render(mode="rgb_array", height=256, width=256) 
                 plt.imshow(image)
 
-                # plt.show(block=False)
+                plt.show(block=False)
 
                 # plt.pause(0.25)
-                print("THERE")
+                # print("THERE")
 
                 # plt.close()
                 
-                name = location_SAC_6 + str(time.time()) + ".png"
+                name = location_SAC_13 + "Set/"+ str(time.time()) + ".png"
                 plt.savefig(name)
                 print("Done /n")
         i = i + 1

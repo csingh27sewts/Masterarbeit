@@ -29,7 +29,7 @@ if __name__ == '__main__':
     # Choose environment
     # env_id = 'cloth_v0'
     # env_id = 'cloth_sewts_exp2_2'
-    env_id = 'cloth_sewts_minimal'
+    env_id = 'cloth_sewts_minimal_2_4'
     n_games = 50
     score_max = []
     time_step_counter_max = []

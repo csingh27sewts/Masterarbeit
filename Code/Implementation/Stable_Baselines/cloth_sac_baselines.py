@@ -31,6 +31,7 @@ if __name__ == '__main__':
     print(inspect.getfile(dmc2gym)) # built in path
    
     # EXPERIMENT #2
+    # MINIMAL
     env_id_0 = 'cloth_sewts_minimal_1_0'
     env_id_1 = 'cloth_sewts_minimal_1_1'
     env_id_2 = 'cloth_sewts_minimal_1_2'
@@ -40,20 +41,48 @@ if __name__ == '__main__':
     env_id_9 = 'cloth_sewts_minimal_1_9'
     env_id_10 = 'cloth_sewts_minimal_2_1'   
     env_id_11 = 'cloth_sewts_minimal_2_2'   
+    env_id_12 = 'cloth_sewts_minimal_2_4'   
     env_id_13 = 'cloth_sewts_minimal_3_0'   
+    env_id_80 = 'cloth_sewts_minimal_8'   
+    # MEDIUM
+    env_id_0_m = 'cloth_sewts_medium_1_0'
+    env_id_1_m = 'cloth_sewts_medium_1_1'
+    env_id_2_m = 'cloth_sewts_medium_1_2'
+    env_id_4 = 'cloth_sewts_minimal_1_4'
+    env_id_6 = 'cloth_sewts_minimal_1_6'
+    env_id_7 = 'cloth_sewts_minimal_1_7'
+    env_id_9_m = 'cloth_sewts_medium_1_9'
+    env_id_10_m = 'cloth_sewts_medium_2_1'   
+    env_id_11_m = 'cloth_sewts_medium_2_2'   
+    env_id_12 = 'cloth_sewts_minimal_2_4'   
+    env_id_13 = 'cloth_sewts_minimal_3_0'   
+    env_id_80 = 'cloth_sewts_minimal_8'   
+    # FULL
+    env_id_0_f = 'cloth_sewts_full_1_0'
+    env_id_1_f = 'cloth_sewts_full_1_1'
+    env_id_2_f = 'cloth_sewts_full_1_2'
+    env_id_4 = 'cloth_sewts_full_1_4'
+    env_id_6 = 'cloth_sewts_full_1_6'
+    env_id_7 = 'cloth_sewts_full_1_7'
+    env_id_9 = 'cloth_sewts_full_1_9'
+    env_id_10 = 'cloth_sewts_full_2_1'   
+    env_id_11 = 'cloth_sewts_full_2_2'   
+    env_id_12 = 'cloth_sewts_full_2_4'   
+    env_id_13 = 'cloth_sewts_full_3_0'   
+    env_id_80 = 'cloth_sewts_full_8'   
+    
+    env_id = [env_id_0]
 
-
-    env_id = [env_id_13]
     # reward_set = [499] #env_id_0, env_id_2
     # reward_set = [0.997] #env_id_1
     # env_id = [env_id_7, env_id_1]
     # env_id = [env_id_6, env_id_9]
     # reward_set = [490, 980] # env_id_0, env_id_2
     # reward_set = [490] # env_id_6, env_id_7
-    # reward_set = [-3] # env_id_10
+    reward_set = [-3] # env_id_10
     # reward_set = [1990] # env_id_11
-    reward_set = [1480] # env_id_13
-
+    # reward_set = [1480] # env_id_13
+    # reward_set = [1990] # env_id_80
     # Make z 0
     # location_1 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_2_1/cloth_sewts_minimal"
     # Make corner move to fixed position
@@ -82,25 +111,30 @@ if __name__ == '__main__':
     location_9 = location_SAC_9 + "cloth_sewts_minimal"
     
     location_SAC_10 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_2_1/"
-    location_10 = location_SAC_10 + "cloth_sewts_minimal"
+    location_10 = location_SAC_10 + "cloth_sewts_medium"
      
     location_SAC_11 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_2_2/"
     location_11 = location_SAC_11 + "cloth_sewts_minimal"
+      
+    location_SAC_12 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_2_4/"
+    location_12 = location_SAC_12 + "cloth_sewts_minimal"
  
     location_SAC_13 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_3_0/"
     location_13 = location_SAC_13 + "cloth_sewts_minimal"
  
+    location_SAC_80 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_8_0/"
+    location_80 = location_SAC_80 + "cloth_sewts_minimal"
+ 
     location_8 = "/home/chandandeep/Masterarbeit/Code/Implementation/Stable_Baselines/output/SAC_1_8/cloth_sewts_minimal"
     
     # location_set = [location_9, location_9]
-    location_set = [location_13]   
+    location_set = [location_0]   
     
     path_to_output = os.getcwd() + '/output'
     
     step = 0
     reward = 0
-    for i in range(len(location_set)):
- 
+    for i in range(len(location_set)): 
             
         env = dmc2gym.make(domain_name=env_id[i], task_name='easy', seed=1) #dmc2gym package
 
@@ -149,7 +183,7 @@ if __name__ == '__main__':
             # plt.show(block=False)
             # plt.pause(0.25)
             # plt.close()
-            # model.learn(total_timesteps=120000, reset_num_timesteps = False, callback = stable_baselines_logging.ImageRecorderCallback(), log_interval=1) # log_interval = no. of episodes
+            # model.learn(total_timesteps=150000, reset_num_timesteps = False, callback = stable_baselines_logging.ImageRecorderCallback(), log_interval=1) # log_interval = no. of episodes
             print("/nLEARNT")
             # EXPERIMENT #
             # model.save(location_set[i])
@@ -198,7 +232,7 @@ if __name__ == '__main__':
 
                 # plt.close()
                 
-                name = location_SAC_13 + "Set/"+ str(time.time()) + ".png"
+                name = location_SAC_0 + "Set/"+ str(time.time()) + ".png"
                 plt.savefig(name)
                 print("Done /n")
         i = i + 1

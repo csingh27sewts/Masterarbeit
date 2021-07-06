@@ -32,13 +32,15 @@ from dm_control import viewer
 
 _DEFAULT_TIME_LIMIT = 20
 SUITE = containers.TaggedTasks()
+
 CORNER_INDEX_ACTION=['B0_0','B0_2','B2_0','B2_2']
 CORNER_INDEX_POSITION=['G0_0','G0_2','G2_0','G2_2']
 INDEX_ACTION=['B0_0','B0_1','B0_2','B1_0','B2_0','B1_1','B1_2','B2_1','B2_2']
+
 def get_model_and_assets():
   """Returns a tuple containing the model XML string and a dict of assets."""
 
-  return common.read_model('cloth_sewts_minimal.xml'),common.ASSETS
+  return common.read_model('cloth_sewts_minimal_raw.xml'),common.ASSETS
 
 W=64
 

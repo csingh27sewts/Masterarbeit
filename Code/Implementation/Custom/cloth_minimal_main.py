@@ -33,7 +33,7 @@ if __name__ == '__main__':
     
     # LOAD TASK
     print(inspect.getfile(dm_control))
-    env = suite.load(domain_name="cloth_sewts_minimal", task_name="easy") 
+    env = suite.load(domain_name="cloth_sewts_minimal_2_4", task_name="easy") 
     # env = suite.load(domain_name="cloth_sewts_exp2", task_name="easy") 
 
     # DEFINE ACTION SPEC 

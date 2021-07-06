@@ -39,7 +39,7 @@ INDEX_ACTION=['B0_0','B0_1','B0_2','B1_0','B2_0','B1_1','B1_2','B2_1','B2_2']
 def get_model_and_assets():
   """Returns a tuple containing the model XML string and a dict of assets."""
 
-  return common.read_model('cloth_sewts_minimal.xml'),common.ASSETS
+  return common.read_model('cloth_sewts_full.xml'),common.ASSETS
 
 W=64
 
@@ -92,7 +92,7 @@ class Cloth(base.Task):
     # physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
 
     for i in range(0,50):
-        physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:2] = np.random.uniform(-.5,.5,size=2) * 5
+        physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:2] = np.random.uniform(-1,1,size=2) * 5
         physics.step()
 
     super(Cloth, self).initialize_episode(physics)

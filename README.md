@@ -1,5 +1,5 @@
 Run :  
-*Launch the training*
+*Launch the training*  
 cd Code  
 python3 cloth_sac_main.py  
  
